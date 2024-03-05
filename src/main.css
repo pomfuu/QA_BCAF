@@ -1,0 +1,39 @@
+@import url('https://fonts.googleapis.com/css2?family=Questrial&display=swap');
+
+.font2{
+    font-family: 'Questrial', sans-serif;
+}
+
+.default-text-color {
+    color: #1e1e1e !important;
+}
+  
+.hover-magnify:hover .default-text-color {
+    color:#44617b !important;
+    transform: scale(1.1) !important;
+    transition: 0.5s ease-in-out !important;
+    -webkit-transition: 0.5s ease-in-out !important;
+    -moz-transition: 0.5s ease-in-out !important;
+    -ms-transition: 0.5s ease-in-out !important;
+    -o-transition: 0.5s ease-in-out !important;
+}
+  
+.custom-dropdown-button button {
+    background-color: #06b6d4;
+    border: none;
+    font-size: 0.85vw;
+    border-radius: 0.5vw;
+    padding-left: 2.5vw;
+    padding-right: 2.5vw;
+    padding-top: 0.7vw;
+    padding-bottom: 0.7vw;
+    cursor: pointer;
+    -webkit-border-radius: 0.5vw;
+    -moz-border-radius: 0.5vw;
+    -ms-border-radius: 0.5vw;
+    -o-border-radius: 0.5vw;
+}
+  
+.custom-dropdown-button button:hover {
+    background-color: #0e7490; 
+}
