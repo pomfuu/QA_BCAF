@@ -24,31 +24,25 @@ const ChartsAll = () => {
     };
 
     return (
-        <div>
-            <DropdownButton
-            className='fw-semibold custom-dropdown-button ms-auto text-end' 
-            id="dropdown-basic-button"
-            title={`${selectedMonth || 'Select Month'}`}
-            >
-                <Dropdown.Item onClick={() => handleMonthSelect('January')}>January</Dropdown.Item>
-                <Dropdown.Item onClick={() => handleMonthSelect('February')}>February</Dropdown.Item>
-                <Dropdown.Item onClick={() => handleMonthSelect('March')}>March</Dropdown.Item>
-                <Dropdown.Item onClick={() => handleMonthSelect('April')}>April</Dropdown.Item>
-                <Dropdown.Item onClick={() => handleMonthSelect('May')}>May</Dropdown.Item>
-                <Dropdown.Item onClick={() => handleMonthSelect('June')}>June</Dropdown.Item>
-                <Dropdown.Item onClick={() => handleMonthSelect('July')}>July</Dropdown.Item>
-                <Dropdown.Item onClick={() => handleMonthSelect('August')}>August</Dropdown.Item>
-                <Dropdown.Item onClick={() => handleMonthSelect('September')}>September</Dropdown.Item>
-                <Dropdown.Item onClick={() => handleMonthSelect('October')}>October</Dropdown.Item>
-                <Dropdown.Item onClick={() => handleMonthSelect('November')}>November</Dropdown.Item>
-                <Dropdown.Item onClick={() => handleMonthSelect('December')}>December</Dropdown.Item>
-            </DropdownButton>
-
-            {selectedMonth === 'February' && <ChartsFebruari />}
-            {selectedMonth === 'March' && <ChartsMaret />}
+    <div className='container-fluid mb-4'>
+        <div className="row align-items-center">
+            <div className="col-4 text-center font2 mx-auto">
+                <p style={{ fontSize: '3.6vw', marginBottom: '-0.7vw' }}>QA DASHBOARD</p>
+                <DropdownButton
+                    className='fw-semibold fs-3 text-center custom-dropdown-button'
+                    id="dropdown-basic-button"
+                    title={`${selectedMonth + ' Edition'|| 'Select Month'}`}
+                >
+                    {['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'].map((month, index) => (
+                        <Dropdown.Item key={index} onClick={() => handleMonthSelect(month)}>{month}</Dropdown.Item>
+                    ))}
+                </DropdownButton>
+            </div>
         </div>
+        {selectedMonth === 'February' && <ChartsFebruari />}
+        {selectedMonth === 'March' && <ChartsMaret />}
+    </div>
     );
 };
 
 export default ChartsAll;
-
