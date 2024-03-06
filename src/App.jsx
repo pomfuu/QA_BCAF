@@ -3,6 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { useRoutes } from 'react-router-dom';
 import Home from './Home';
 import Table from './Table';
+import InputData from './InputData';
 
 const routes = [
   {
@@ -10,8 +11,8 @@ const routes = [
     element: <Home />,
   },
   {
-    path: "/table_dashboard",
-    element: <Table />,
+    path: "/input_data",
+    element: <InputData />,
   },
 ];
 
