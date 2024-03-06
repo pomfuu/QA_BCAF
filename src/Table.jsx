@@ -3,7 +3,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./main.css"
-import Menu from "./componentsChart/Menu";
+import Menu from "./Menu";
 import TablesAll from "./TablesAll";
 
 const Table = () => {
