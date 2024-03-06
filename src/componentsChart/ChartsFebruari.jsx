@@ -26,7 +26,7 @@ const ChartsFebruari = () => {
             }
         };
     }, []);
-
+    
     useEffect(() => {
         if (chartInstance.current !== null) {
             chartInstance.current.destroy();
