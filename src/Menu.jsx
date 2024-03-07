@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./main.css"
 import { Image } from "react-bootstrap";
+import bcaf from '../public/Assets/BCA_Finance.svg';
+import mnu from '../public/Assets/Up_Right_Arrow.png';
 
 const Menu = () => {
     const navigate = useNavigate();
@@ -29,12 +31,12 @@ const Menu = () => {
                 <div className="col d-flex align-items-center justify-content-between">
                     <div className="text-start">
                         <Link to="/">
-                            <img className="img-fluid" src="../public/Assets/BCA_Finance.svg" alt="Menu" style={{ height:'2vw' }} />
+                            <img className="img-fluid" src={bcaf} alt="Menu" style={{ height:'2vw' }} />
                         </Link>
                     </div>
                     <div className="text-end"> 
                         <Link to="/input_data">
-                            <img className="img-fluid" src="../public/Assets/Up_Right_Arrow.png" alt="Menu" style={{ height:'3vw' }} />
+                            <img className="img-fluid" src={mnu} alt="Menu" style={{ height:'3vw' }} />
                         </Link>
                     </div>
                 </div>
