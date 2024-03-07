@@ -21,7 +21,7 @@ const ChartsMaret = () => {
         {"name":"Dimas","week1Feb":"1400","week2Feb":"","week3Feb":"","week4Feb":"","week5Feb":"","totalFeb":"1400","persentaseFeb":"","role":"auto"},
         {"name":"Gita","week1Feb":"","week2Feb":"","week3Feb":"","week4Feb":"","week5Feb":"","totalFeb":"","persentaseFeb":"","role":"manual"},
         {"name":"Alin","week1Feb":"1900","week2Feb":"","week3Feb":"","week4Feb":"","week5Feb":"","totalFeb":"1900","persentaseFeb":"","role":"auto"},
-        {"name":"Cindy","week1Feb":"1800","week2Feb":"","week3Feb":"","week4Feb":"","week5Feb":"","totalFeb":"1800","persentaseFeb":"","role":"auto"}
+        {"name":"Cindy","week1Feb":"1900","week2Feb":"","week3Feb":"","week4Feb":"","week5Feb":"","totalFeb":"1900","persentaseFeb":"","role":"auto"}
     ]);
 
     const getRobotImage = (total, role) => {
