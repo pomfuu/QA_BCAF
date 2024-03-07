@@ -84,10 +84,10 @@ const ChartsMaret = () => {
                 <div className="col-2 font2 text-white rounded-2 me-2 btn fs-5" style={{ backgroundColor: '#FFC90C' }}>WEEK 3</div>
                 <div className="col-2 font2 text-white rounded-2 me-2 btn fs-5" style={{ backgroundColor: '#83EC44' }}>WEEK 4</div>
                 <div className="col-2 font2 text-white rounded-2 me-2 btn fs-5" style={{ backgroundColor: '#4CBE08' }}>WEEK 5</div>
+            </div>
             <div className='col align-items-center d-flex mt-4'>
                 <div className="col-1 me-4 font2 fs-5 ms-2">Note</div>
                 <div className="col-10 text-start">Each bar contains 400 steps (manual) and 480 steps (automation)</div>
-            </div>
             </div>
         </div>
     );
