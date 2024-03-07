@@ -27,7 +27,6 @@ const InputContent = () => {
         }
 
         const newEntry = {
-            no: editIndex !== null ? tableData[editIndex].no : tableData.length + 1,
             name: selectedName,
             month: selectedMonth,
             week: selectedWeek,
@@ -45,7 +44,7 @@ const InputContent = () => {
             setEditIndex(null);
         } else {
             // Add new entry
-            setTableData(prevData => [...prevData, { ...newEntry, no: prevData.length + 1 }]);
+            setTableData(prevData => [...prevData, { ...newEntry }]);
         }
 
         // Reset input values and close modal
@@ -76,7 +75,7 @@ const InputContent = () => {
     const handleConfirmDelete = () => {
         setTableData(prevData => {
             const newData = prevData.filter((entry, i) => i !== deleteIndex);
-            return newData.map((entry, index) => ({ ...entry, no: index + 1 }));
+            return newData;
         });
         setShowConfirm(false);
         setDeleteIndex(null);
@@ -220,7 +219,6 @@ const InputContent = () => {
             <Table striped bordered>
                 <thead >
                     <tr className="align-middle text-center font2" style={{ height: '50px' }}>
-                        <th style={{ width: '10%' }}>No.</th>
                         <th style={{ width: '20%' }}>Name</th>
                         <th style={{ width: '15%' }}>Month</th>
                         <th style={{ width: '15%' }}>Week</th>
@@ -231,7 +229,6 @@ const InputContent = () => {
                 <tbody>
                     {tableData.map((entry, index) => (
                         <tr key={index} className="align-middle text-center" style={{ height: '50px' }}>
-                            <td>{entry.no}</td>
                             <td>{entry.name}</td>
                             <td>{entry.month}</td>
                             <td>{entry.week}</td>
