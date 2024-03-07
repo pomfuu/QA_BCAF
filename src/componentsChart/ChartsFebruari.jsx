@@ -15,7 +15,7 @@ const ChartsFebruari = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('https://sheet2api.com/v1/a2moTg9MSGeS/qa_dashboard');
+                const response = await axios.get('https://sheetdb.io/api/v1/4e6szdqjrrcnp');
                 const newData = response.data || [];
                 setData(newData);
             } catch (error) {
@@ -52,23 +52,23 @@ const ChartsFebruari = () => {
     };
 
     return (
-        <div className='mt-5'>
+        <div>
             {data.map((item, index) => (
                 <div key={index} className="container-fluid">
                     <div className="row mb-2 d-flex align-items-center">
                         <div className="col-1 text-end">
                             <img style={{ height: '3vw' }} className='img-fluid' src={getRobotImage(item.totalFeb, item.role)} alt="robots" />
                         </div>
-                        <div className='col-6 text-start rounded-3' style={{ backgroundColor: '#D9D9D9', padding: '0.5vw' }}>
+                        <div className='col-9 text-start rounded-3' style={{ backgroundColor: '#D9D9D9', padding: '0.5vw' }}>
                             <div className="row mx-2 d-flex">
-                                {renderBars(item.totalFeb, item.week1Feb, '#CF3D3D', item.role)}
-                                {renderBars(item.totalFeb, item.week2Feb, '#EA8208', item.role)}
-                                {renderBars(item.totalFeb, item.week3Feb, '#FFC90C', item.role)}
-                                {renderBars(item.totalFeb, item.week4Feb, '#83EC44', item.role)}
-                                {renderBars(item.totalFeb, item.week5Feb, '#4CBE08', item.role)}
+                                {item.week1Feb !== 0 && renderBars(item.totalFeb, item.week1Feb, '#CF3D3D', item.role)}
+                                {item.week2Feb !== 0 && renderBars(item.totalFeb, item.week2Feb, '#EA8208', item.role)}
+                                {item.week3Feb !== 0 && renderBars(item.totalFeb, item.week3Feb, '#FFC90C', item.role)}
+                                {item.week4Feb !== 0 && renderBars(item.totalFeb, item.week4Feb, '#83EC44', item.role)}
+                                {item.week5Feb !== 0 && renderBars(item.totalFeb, item.week5Feb, '#4CBE08', item.role)}
                             </div>
                         </div>
-                        <div className="col-5 fs-5">
+                        <div className="col-2 fs-5">
                             <div className='fw-semibold'>
                                 {item.name}
                             </div>
@@ -82,25 +82,25 @@ const ChartsFebruari = () => {
         </div>
     );
 };
-function renderBars(total, weekValue, color, role) {
-  let threshold = 375; // Default threshold
-  if (role === 'auto') {
-    threshold = 450; // Threshold for 'auto' role
-  }
-  const maxBars = 20;
-  const bars = [];
-  const numBars = Math.min(Math.ceil(weekValue / threshold), maxBars);
 
-  for (let i = 0; i < numBars; i++) {
-    const barWidth = weekValue >= threshold ? '38px' : '10px';
-    const tooltipText = `Week Total: ${weekValue}`;
-    bars.push(
-      <div key={i} className="py-4 me-1 mb-1 rounded-2" style={{ width: barWidth, backgroundColor: color, position: 'relative' }}>
-        <div className="tooltip px-5">{tooltipText}</div>
-      </div>
-    );
-  }
-  return bars;
+function renderBars(total, weekValue, color, role) {
+    let goal = 6000;
+    if (role === 'auto') {
+        goal = 7200;
+    }
+
+    const percentage = Math.min((weekValue / goal) * 100, 100);
+    const barWidth = `${percentage}%`;
+
+    const tooltipText = `Total: ${weekValue}`;
+    
+    if (weekValue !== null || weekValue !== 0){
+        return (
+            <div className="py-4 me-1 mb-1 rounded-2" style={{ width: barWidth, backgroundColor: color, position: 'relative' }}>
+                <div className="tooltip font2 fs-5 px-5">{tooltipText}</div>
+            </div>
+        );
+    }
 }
 
 export default ChartsFebruari;
