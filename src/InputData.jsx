@@ -11,7 +11,7 @@ const InputData = () => {
             <Menu/>
             <div className="container-fluid px-5">
                 <Header />
-                <InputContent/>
+                <InputContent />
             </div>
 
         </div>
