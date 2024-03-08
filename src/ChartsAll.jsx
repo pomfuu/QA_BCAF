@@ -6,6 +6,8 @@ import ChartsFebruari from './componentsChart/ChartsFebruari';
 import ChartsMaret from './componentsChart/ChartsMaret';
 import "./main.css"
 import ContentRight from './Gallery/ContentRight';
+import { Image } from 'react-bootstrap';
+import star from '../public/Assets/star.svg';
 
 const ChartsAll = () => {
     const [selectedMonth, setSelectedMonth] = useState('');
@@ -25,12 +27,16 @@ const ChartsAll = () => {
     };
 
     return (
-    <div className='container-fluid mb-4'>
-        <div className="row align-items-center mb-5">
+    <div className='container-fluid'>
+        <div className="row align-items-center">
                 <div className="col-4 text-center font2 mx-auto">
-                    <p style={{ fontSize: '3.6vw', marginBottom: '-0.7vw' }}>QA DASHBOARD</p>
+                    <div className="d-flex align-items-center justify-content-center"> {/* Added justify-content-center */}
+                        <p style={{ fontSize: '3vw', marginBottom: '-0.9vw' }}>QA DASHBOARD</p>
+                        <Image style={{ height:'2vw' }} className='img-fluid' src={star}></Image>
+                    </div>
                     <DropdownButton
-                        className='fw-semibold fs-3 text-center custom-dropdown-button'
+                        className='fw-semibold text-center custom-dropdown-button'
+                        style={{ fontSize: '1.5vw '}}
                         id="dropdown-basic-button"
                         title={`${selectedMonth + ' Edition'|| 'Select Month'}`}
                     >
@@ -41,11 +47,11 @@ const ChartsAll = () => {
                 </div>
         </div>
         <div className="row">
-            <div className="col-8">
+            <div className="col-12">
                 {selectedMonth === 'February' && <ChartsFebruari />}
                 {selectedMonth === 'March' && <ChartsMaret />}
             </div>
-            <div className="col-4">
+            <div className="col-12">
                 <ContentRight selectedMonth={selectedMonth} />
             </div>
         </div>

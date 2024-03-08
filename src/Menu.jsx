@@ -26,17 +26,17 @@ const Menu = () => {
     };
 
     return (
-        <div className="container-fluid pt-3 px-5" style={{ marginBottom: '-2vw' }}>
+        <div className="container-fluid pt-3 px-5" style={{ marginBottom: '-2.7vw' }}>
             <div className="row">
                 <div className="col d-flex align-items-center justify-content-between">
                     <div className="text-start">
                         <Link to="/">
-                            <img className="img-fluid" src={bcaf} alt="Menu" style={{ height:'2vw' }} />
+                            <img className="img-fluid" src={bcaf} alt="Menu" style={{ height:'1.5vw' }} />
                         </Link>
                     </div>
                     <div className="text-end"> 
                         <Link to="/input_data">
-                            <img className="img-fluid" src={mnu} alt="Menu" style={{ height:'3vw' }} />
+                            <img className="img-fluid" src={mnu} alt="Menu" style={{ height:'1.5vw' }} />
                         </Link>
                     </div>
                 </div>
