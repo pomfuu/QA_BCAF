@@ -15,7 +15,7 @@ const ChartsFebruari = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('https://sheetdb.io/api/v1/4e6szdqjrrcnp');
+                const response = await axios.get('https://sheet.best/api/sheets/2f61bb11-7793-47ec-8ffe-40700b4097e4');
                 const newData = response.data || [];
                 setData(newData);
             } catch (error) {
@@ -27,11 +27,11 @@ const ChartsFebruari = () => {
     }, []);
 
     const getRobotImage = (total, role) => {
-        let target = 6000;
+        let target = 7500;
         let robotImg = robot1;
 
         if (role === 'auto') {
-            target = 7200;
+            target = 9000;
         }
 
         const percentage = (total / target) * 100;
@@ -53,52 +53,100 @@ const ChartsFebruari = () => {
 
     return (
         <div>
-            {data.map((item, index) => (
-                <div key={index} className="container-fluid">
-                    <div className="row mb-2 d-flex align-items-center">
-                        <div className="col-1 text-end">
-                            <img style={{ height: '3vw' }} className='img-fluid' src={getRobotImage(item.totalFeb, item.role)} alt="robots" />
-                        </div>
-                        <div className='col-9 text-start rounded-3' style={{ backgroundColor: '#D9D9D9', padding: '0.5vw' }}>
-                            <div className="row mx-2 d-flex">
-                                {item.week1Feb !== 0 && renderBars(item.totalFeb, item.week1Feb, '#CF3D3D', item.role)}
-                                {item.week2Feb !== 0 && renderBars(item.totalFeb, item.week2Feb, '#EA8208', item.role)}
-                                {item.week3Feb !== 0 && renderBars(item.totalFeb, item.week3Feb, '#FFC90C', item.role)}
-                                {item.week4Feb !== 0 && renderBars(item.totalFeb, item.week4Feb, '#83EC44', item.role)}
-                                {item.week5Feb !== 0 && renderBars(item.totalFeb, item.week5Feb, '#4CBE08', item.role)}
+            <div className="row mt-4">
+                <div className="col-lg-6 ">
+                {data.slice(0, Math.ceil(data.length / 2))
+                    .filter(item => item.week1Feb !== null && item.week2Feb !== null && item.week3Feb !== null && item.week4Feb !== null && item.week5Feb !== null)
+                    .map((item, index) => {
+                        const formattedPercentage = Math.round(parseFloat(item.persentaseFeb));
+                        return (
+                            <div key={index} className="container-fluid align-items-center">
+                                <div className="col-12 mb-2 d-flex align-items-center">
+                                    <div className="col-1 text-center">
+                                        <img style={{ height: '2.5vw' }} className='img-fluid' src={getRobotImage(item.totalFeb, item.role)} alt="robots" />
+                                        <div className='fw-semibold' style={{ fontSize:'0.9rem' }}>
+                                            {item.name}
+                                        </div>
+                                    </div>
+                                    <div className='col-10 me-2 text-start rounded-3 ' style={{ backgroundColor: '#D9D9D9', padding: '0.5vw' }}>
+                                        <div className="row mx-2 d-flex" style={{ height: '1.7vw' }}>
+                                            {item.week1Feb !== "" && renderBars(item.totalFeb, item.week1Feb, '#F86161', item.role)}
+                                            {item.week2Feb !== "" && renderBars(item.totalFeb, item.week2Feb, '#FFA336', item.role)}
+                                            {item.week3Feb !== "" && renderBars(item.totalFeb, item.week3Feb, '#FFD542', item.role)}
+                                            {item.week4Feb !== "" && renderBars(item.totalFeb, item.week4Feb, '#84E44B', item.role)}
+                                            {item.week5Feb !== "" && renderBars(item.totalFeb, item.week5Feb, '#60CAC4', item.role)}
+                                        </div>
+                                    </div>
+                                    <div className="col-2 fs-5">                 
+                                        <div style={{ fontSize:'0.8rem' }}>
+                                            Total: <b>{item.totalFeb}</b>
+                                            <p className='fw-bold' style={{ color:'#CF3D3D' }}>{formattedPercentage}%</p>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div className="col-2 fs-5">
-                            <div className='fw-semibold'>
-                                {item.name}
-                            </div>
-                            <div>
-                                Total: {item.totalFeb}
-                            </div>
-                        </div>
-                    </div>
+                        );
+                    })
+                }
                 </div>
-            ))}
+                <div className="col-lg-6">
+                {data.slice(Math.ceil(data.length / 2))
+                    .filter(item => item.week1Feb !== null && item.week2Feb !== null && item.week3Feb !== null && item.week4Feb !== null && item.week5Feb !== null)
+                    .map((item, index) => {
+                        const formattedPercentage = Math.round(parseFloat(item.persentaseFeb));
+                        return (
+                            <div key={index} className="container-fluid align-items-center">
+                                <div className="col-12 mb-2 d-flex align-items-center">
+                                    <div className="col-1 text-center">
+                                        <img style={{ height: '2.5vw' }} className='img-fluid' src={getRobotImage(item.totalFeb, item.role)} alt="robots" />
+                                        <div className='fw-semibold' style={{ fontSize:'0.9rem' }}>
+                                            {item.name}
+                                        </div>
+                                    </div>
+                                    <div className='col-10 me-2 text-start rounded-3 ' style={{ backgroundColor: '#D9D9D9', padding: '0.5vw' }}>
+                                        <div className="row mx-2 d-flex" style={{ height: '1.7vw' }}>
+                                            {item.week1Feb !== "" && renderBars(item.totalFeb, item.week1Feb, '#F86161', item.role)}
+                                            {item.week2Feb !== "" && renderBars(item.totalFeb, item.week2Feb, '#FFA336', item.role)}
+                                            {item.week3Feb !== "" && renderBars(item.totalFeb, item.week3Feb, '#FFD542', item.role)}
+                                            {item.week4Feb !== "" && renderBars(item.totalFeb, item.week4Feb, '#84E44B', item.role)}
+                                            {item.week5Feb !== "" && renderBars(item.totalFeb, item.week5Feb, '#60CAC4', item.role)}
+                                        </div>
+                                    </div>
+                                    <div className="col-2 fs-5">                 
+                                        <div style={{ fontSize:'0.8rem' }}>
+                                            Total: <b>{item.totalFeb}</b>
+                                            <p className='fw-bold' style={{ color:'#CF3D3D' }}>{formattedPercentage}%</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    })
+                }
+                </div>
+            </div>
         </div>
     );
 };
 
 function renderBars(total, weekValue, color, role) {
-    let goal = 6000;
+    let goal = 7500;
     if (role === 'auto') {
-        goal = 7200;
+        goal = 9000;
     }
 
     const percentage = Math.min((weekValue / goal) * 100, 100);
-    const barWidth = `${percentage}%`;
+    const barWidth = goal <= weekValue ? '100px' : `${percentage}%`;
 
     const tooltipText = `Total: ${weekValue}`;
     
-    if (weekValue !== null || weekValue !== 0){
+    if (weekValue === null || weekValue === 0){
+        return null; 
+    } else {
         return (
-            <div className="py-4 me-1 mb-1 rounded-2" style={{ width: barWidth, backgroundColor: color, position: 'relative' }}>
-                <div className="tooltip font2 fs-5 px-5">{tooltipText}</div>
-            </div>
+            <div className="me-1 rounded-2 d-flex flex-column align-items-center justify-content-center" style={{ flex: '1', maxWidth: barWidth, backgroundColor: color, position: 'relative' }}>
+                <div className='text-center font2' style={{ fontSize:'0.9vw', lineHeight: '1.7vw', color:'#1e1e1e' }}>{weekValue}</div>
+            <div style={{ height: '100%' }}></div> </div>
         );
     }
 }

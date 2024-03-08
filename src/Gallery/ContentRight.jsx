@@ -52,62 +52,68 @@ const ContentRight = ({ selectedMonth }) => {
     };
 
     return (
-        <div>
-            <div style={{ backgroundColor: '#1e1e1e' }} className="text-white font2 rounded-2 px-4 py-1 fs-5">THIS MONTH GALLERY</div>
-            <div className="lightbox">
-                <div className="row mt-2">
-                    {uploadedImages.map((image, index) => (
-                        <div key={index} className="col-lg-6 col-12 position-relative"
-                            onMouseEnter={() => handleMouseEnter(index)}
-                            onMouseLeave={() => handleMouseLeave(index)}>
-                            <img className="img-fluid rounded-2 w-100 mb-2" src={image} alt="" style={{ objectFit: 'cover', height: '10vw' }} />
-                            <div id={`image-buttons-${index}`} className="image-buttons position-absolute top-50 start-50 translate-middle" style={{ display: 'none' }}>
-                                <div className='btn rounded-2 bg-black text-white' onClick={() => handleDelete(index)}>Delete</div>
-                            </div>
+        <div className='container-fluid'>
+            <div className="row">
+                <div className="col-lg-7 col-12">
+                    <div style={{ backgroundColor: '#00BDB2' }} className="text-white font2 rounded-2 px-4 py-1">THIS MONTH GALLERY</div>
+                    <div className="lightbox">
+                        <div className="row mt-2">
+                            {uploadedImages.map((image, index) => (
+                                <div key={index} className="col-lg-3 col-6 position-relative"
+                                    onMouseEnter={() => handleMouseEnter(index)}
+                                    onMouseLeave={() => handleMouseLeave(index)}>
+                                    <img className="img-fluid rounded-2 w-100 mb-2" src={image} alt="" style={{ objectFit: 'cover', height: '10vw' }} />
+                                    <div id={`image-buttons-${index}`} className="image-buttons position-absolute top-50 start-50 translate-middle" style={{ display: 'none' }}>
+                                        <div className='btn rounded-2 bg-black text-white' onClick={() => handleDelete(index)}>Delete</div>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
-                    ))}
+                    </div>
+                    {uploadedImages.length < 5 && (
+                        <div className="btn rounded-2 text-white font2 mb-2" style={{ backgroundColor: '#F86161' }} onClick={() => fileInputRef.current.click()}>Add Image</div>
+                    )}
+                    <input type="file" ref={fileInputRef} style={{ display: 'none' }} accept="image/*" onChange={handleFileUpload} />
                 </div>
-            </div>
-            {uploadedImages.length < 5 && (
-                <div className="btn rounded-2 text-white px-5 py-1" style={{ backgroundColor: '#CF3D3D' }} onClick={() => fileInputRef.current.click()}>Add Image</div>
-            )}
-            <input type="file" ref={fileInputRef} style={{ display: 'none' }} accept="image/*" onChange={handleFileUpload} />
-            <div style={{ backgroundColor: '#1e1e1e' }} className="text-white font2 rounded-2  mt-2 px-4 py-1 fs-5">{selectedMonth} ACHIEVEMENTS</div>
-            <div className='mt-2'>
-                <Table hover>
-                    <thead className='text-center'>
-                        <tr>
-                            <th className='text-white' style={{ backgroundColor:'#1E1E1E' }}>Week 1</th>
-                            <th className='text-white' style={{ backgroundColor:'#1E1E1E' }}>Week 2</th>
-                            <th className='text-white' style={{ backgroundColor:'#1E1E1E' }}>Week 3</th>
-                            <th className='text-white' style={{ backgroundColor:'#1E1E1E' }}>Week 4</th>
-                            <th className='text-white' style={{ backgroundColor:'#1E1E1E' }}>Week 5</th>
-                        </tr>
-                    </thead>
-                    <tbody className='text-center'>
-                        <tr>
-                            <td>70%</td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                        </tr>
-                    </tbody>
-                </Table>
-            </div>
-            <div className="row align-items-top">
-                <div className="col-3 fw-semibold fs-5">
-                    WIG
-                </div>
-                <div className="col-9">
-                    pencapaian SLA penyelesaian project dari 75% ke 90%
-                </div>
-                <div className="col-3 fw-semibold fs-5 mt-2">
-                    LEAD
-                </div>
-                <div className="col-9 mt-2">
-                    1800 QA Otomasi <br />
-                    1500 QA Manual
+                <div className="col-lg-5">
+                    <div style={{ backgroundColor: '#00BDB2' }} className="text-white font2 rounded-2 px-4 py-1">{selectedMonth} ACHIEVEMENTS</div>
+                    <div className='mt-2'>
+                        <Table hover>
+                            <thead className='text-center'>
+                                <tr>
+                                    <th className='text-white' style={{ backgroundColor:'#F86161' }}>Week 1</th>
+                                    <th className='text-white' style={{ backgroundColor:'#FFA336' }}>Week 2</th>
+                                    <th className='text-white' style={{ backgroundColor:'#FFD542' }}>Week 3</th>
+                                    <th className='text-white' style={{ backgroundColor:'#84E44B' }}>Week 4</th>
+                                    <th className='text-white' style={{ backgroundColor:'#26D2C7' }}>Week 5</th>
+                                </tr>
+                            </thead>
+                            <tbody className='text-center'>
+                                <tr>
+                                    <td>70%</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </Table>
+                    </div>
+                    <div className="row align-items-top">
+                        <div style={{ color:'#1e1e1e' }} className="col-3 fw-bold">
+                            WIG
+                        </div>
+                        <div className="col-9">
+                            pencapaian SLA penyelesaian project dari 75% ke 90%
+                        </div>
+                        <div className="col-3 fw-bold mt-2">
+                            LEAD
+                        </div>
+                        <div style={{ color:'#1e1e1e' }} className="col-9 mt-2">
+                            QA Automation : <b>1800 / Week</b> or <b>7200 / Month</b> <br />
+                            QA Manual : <b>1500 / Week</b> or <b>1500 / Week</b>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
