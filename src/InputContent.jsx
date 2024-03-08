@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import { getDocs, collection, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
@@ -8,9 +9,15 @@ import { FaCheck } from 'react-icons/fa';
 
 const InputContent = () => {
     const weeks = ["Week 1", "Week 2", "Week 3", "Week 4", "Week 5"];
+<<<<<<< HEAD
+    const names = ["Alin", "Alzre", "Cindy", "Dimas", "Fajar", "Izza", "Khusnul", "Rania", "Yuda", "Gita"];
+    const months = ["January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"];
+=======
     const names = ["Alin", "Alzre", "Cindy", "Dimas", "Fajar", "Gita", "Izza", "Khusnul", "Rania", "Yuda"];
     const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
+>>>>>>> main
     // State for managing table data
     const [tableData, setTableData] = useState([]);
     const [showModal, setShowModal] = useState(false);
@@ -30,6 +37,17 @@ const InputContent = () => {
     }, []);
 
     const fetchData = async () => {
+<<<<<<< HEAD
+        const querySnapshot = await getDocs(collection(db, 'entries'));
+        const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const sortedData = data.sort((a, b) => a.timestamp - b.timestamp);
+        setTableData(sortedData);
+        const confirmedData = {};
+        data.forEach(entry => {
+            confirmedData[entry.id] = entry.confirmed || false;
+        });
+        setConfirmedRows(confirmedData);
+=======
         try {
             const querySnapshot = await getDocs(query(collection(db, 'entries'), orderBy('timestamp', 'desc')));
             const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -46,10 +64,15 @@ const InputContent = () => {
         } catch (error) {
             console.error('Error fetching data:', error);
         }
+>>>>>>> main
     };
-
-    // Function to handle input modal submission
     const handleInputSubmit = async () => {
+<<<<<<< HEAD
+        if (!selectedMonth || !selectedWeek || !selectedName || !steps || isNaN(steps)) {
+            alert('Please fill in all fields correctly.');
+            return;
+        }
+=======
         // Validate input
         if (!selectedMonth || !selectedWeek || !selectedName || !steps || !scenario || isNaN(steps) || isNaN(scenario)) {
             alert('Please fill in all fields correctly.');
@@ -75,39 +98,38 @@ const InputContent = () => {
             }
         }
 
+>>>>>>> main
         const newEntry = {
             name: selectedName,
             month: selectedMonth,
             week: selectedWeek,
             steps: parseInt(steps),
             confirmed: false,
+<<<<<<< HEAD
+=======
             timestamp: new Date(),
             scenario: scenario,
             notes: notes,
             role: getRole(selectedName) // Assigning role based on selectedName
+>>>>>>> main
         };
 
         if (editId !== null) {
-            // Update existing entry
             try {
                 await updateDoc(doc(db, 'entries', editId), newEntry);
-                setEditId(null); // Reset editId after updating
+                setEditId(null);
             } catch (error) {
                 console.error('Error updating entry:', error);
             }
         } else {
-            // Add new entry
             try {
                 await addDoc(collection(db, 'entries'), newEntry);
             } catch (error) {
                 console.error('Error adding entry:', error);
             }
         }
-
-        // Fetch updated data from Firestore
         await fetchData();
 
-        // Reset input values and close modal
         setSelectedMonth('');
         setSelectedWeek('');
         setSelectedName('');
