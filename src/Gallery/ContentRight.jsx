@@ -78,7 +78,7 @@ const ContentRight = ({ selectedMonth }) => {
                 <div className="col-lg-5">
                     <div style={{ backgroundColor: '#00BDB2' }} className="text-white font2 rounded-2 px-4 py-1">{selectedMonth} ACHIEVEMENTS</div>
                     <div className='mt-2'>
-                        <Table hover>
+                        <Table size='sm' hover>
                             <thead className='text-center'>
                                 <tr>
                                     <th className='text-white' style={{ backgroundColor:'#F86161' }}>Week 1</th>
@@ -99,17 +99,17 @@ const ContentRight = ({ selectedMonth }) => {
                             </tbody>
                         </Table>
                     </div>
-                    <div className="row align-items-top">
+                    <div className="row align-items-top" style={{ fontSize:'0.8rem', marginTop:'-0.7vw' }}>
                         <div style={{ color:'#1e1e1e' }} className="col-3 fw-bold">
                             WIG
                         </div>
                         <div className="col-9">
                             pencapaian SLA penyelesaian project dari 75% ke 90%
                         </div>
-                        <div className="col-3 fw-bold mt-2">
+                        <div className="col-3 fw-bold mt-1">
                             LEAD
                         </div>
-                        <div style={{ color:'#1e1e1e' }} className="col-9 mt-2">
+                        <div style={{ color:'#1e1e1e' }} className="col-9 mt-1">
                             QA Automation : <b>1800 / Week</b> or <b>7200 / Month</b> <br />
                             QA Manual : <b>1500 / Week</b> or <b>1500 / Week</b>
                         </div>
