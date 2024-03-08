@@ -12,16 +12,16 @@ import robot6 from '../../public/Assets/robot_6.svg';
 const ChartsMaret = () => {
 
     const [data] = useState([
-        {"name":"Alzre","week1Feb":"1583","week2Feb":"","week3Feb":"","week4Feb":"","week5Feb":"","totalFeb":"1583","persentaseFeb":"","role":"manual"},
-        {"name":"Khusnul","week1Feb":"1682","week2Feb":"","week3Feb":"","week4Feb":"","week5Feb":"","totalFeb":"1682","persentaseFeb":"","role":"auto"},
-        {"name":"Izza","week1Feb":"1552","week2Feb":"","week3Feb":"","week4Feb":"","week5Feb":"","totalFeb":"1552","persentaseFeb":"","role":"manual"},
-        {"name":"Rania","week1Feb":"1456","week2Feb":"","week3Feb":"","week4Feb":"","week5Feb":"","totalFeb":"1456","persentaseFeb":"","role":"manual"},
-        {"name":"Fajar","week1Feb":"2488","week2Feb":"","week3Feb":"","week4Feb":"","week5Feb":"","totalFeb":"2488","persentaseFeb":"","role":"auto"},
-        {"name":"Yuda","week1Feb":"1452","week2Feb":"","week3Feb":"","week4Feb":"","week5Feb":"","totalFeb":"1452","persentaseFeb":"","role":"manual"},
-        {"name":"Dimas","week1Feb":"1400","week2Feb":"","week3Feb":"","week4Feb":"","week5Feb":"","totalFeb":"1400","persentaseFeb":"","role":"auto"},
-        {"name":"Gita","week1Feb":"","week2Feb":"","week3Feb":"","week4Feb":"","week5Feb":"","totalFeb":"","persentaseFeb":"","role":"manual"},
-        {"name":"Alin","week1Feb":"1900","week2Feb":"","week3Feb":"","week4Feb":"","week5Feb":"","totalFeb":"1900","persentaseFeb":"","role":"auto"},
-        {"name":"Cindy","week1Feb":"1900","week2Feb":"","week3Feb":"","week4Feb":"","week5Feb":"","totalFeb":"1900","persentaseFeb":"","role":"auto"}
+        {"name":"Alzre","week1Feb":"1583","week2Feb":"","week3Feb":"","week4Feb":"","week5Feb":"","totalFeb":"1583","persentaseFeb":"21","role":"manual"},
+        {"name":"Khusnul","week1Feb":"1682","week2Feb":"","week3Feb":"","week4Feb":"","week5Feb":"","totalFeb":"1682","persentaseFeb":"18","role":"auto"},
+        {"name":"Izza","week1Feb":"1552","week2Feb":"","week3Feb":"","week4Feb":"","week5Feb":"","totalFeb":"1552","persentaseFeb":"21","role":"manual"},
+        {"name":"Rania","week1Feb":"1456","week2Feb":"","week3Feb":"","week4Feb":"","week5Feb":"","totalFeb":"1456","persentaseFeb":"19","role":"manual"},
+        {"name":"Fajar","week1Feb":"2488","week2Feb":"","week3Feb":"","week4Feb":"","week5Feb":"","totalFeb":"2488","persentaseFeb":"26","role":"auto"},
+        {"name":"Yuda","week1Feb":"1452","week2Feb":"","week3Feb":"","week4Feb":"","week5Feb":"","totalFeb":"1452","persentaseFeb":"19","role":"manual"},
+        {"name":"Dimas","week1Feb":"1400","week2Feb":"","week3Feb":"","week4Feb":"","week5Feb":"","totalFeb":"1400","persentaseFeb":"15","role":"auto"},
+        {"name":"Gita","week1Feb":"","week2Feb":"","week3Feb":"","week4Feb":"","week5Feb":"","totalFeb":"","persentaseFeb":"0","role":"manual"},
+        {"name":"Alin","week1Feb":"1900","week2Feb":"","week3Feb":"","week4Feb":"","week5Feb":"","totalFeb":"1900","persentaseFeb":"20","role":"auto"},
+        {"name":"Cindy","week1Feb":"1900","week2Feb":"","week3Feb":"","week4Feb":"","week5Feb":"","totalFeb":"1900","persentaseFeb":"20","role":"auto"}
     ]);
 
     const getRobotImage = (total, role) => {
