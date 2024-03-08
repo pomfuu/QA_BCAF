@@ -2,15 +2,22 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import { getDocs, collection, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
+import { query, orderBy } from 'firebase/firestore';
 import Table from 'react-bootstrap/Table';
 import db from './firebaseconfig';
 import { FaCheck } from 'react-icons/fa';
 
 const InputContent = () => {
     const weeks = ["Week 1", "Week 2", "Week 3", "Week 4", "Week 5"];
+<<<<<<< HEAD
     const names = ["Alin", "Alzre", "Cindy", "Dimas", "Fajar", "Izza", "Khusnul", "Rania", "Yuda", "Gita"];
     const months = ["January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December"];
+=======
+    const names = ["Alin", "Alzre", "Cindy", "Dimas", "Fajar", "Gita", "Izza", "Khusnul", "Rania", "Yuda"];
+    const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+>>>>>>> main
     // State for managing table data
     const [tableData, setTableData] = useState([]);
     const [showModal, setShowModal] = useState(false);
@@ -18,6 +25,8 @@ const InputContent = () => {
     const [selectedWeek, setSelectedWeek] = useState('');
     const [selectedName, setSelectedName] = useState('');
     const [steps, setSteps] = useState('');
+    const [scenario, setScenario] = useState('');
+    const [notes, setNotes] = useState('');
     const [showConfirm, setShowConfirm] = useState(false);
     const [editId, setEditId] = useState(null);
     const [deleteId, setDeleteId] = useState(null);
@@ -28,6 +37,7 @@ const InputContent = () => {
     }, []);
 
     const fetchData = async () => {
+<<<<<<< HEAD
         const querySnapshot = await getDocs(collection(db, 'entries'));
         const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         const sortedData = data.sort((a, b) => a.timestamp - b.timestamp);
@@ -37,18 +47,71 @@ const InputContent = () => {
             confirmedData[entry.id] = entry.confirmed || false;
         });
         setConfirmedRows(confirmedData);
+=======
+        try {
+            const querySnapshot = await getDocs(query(collection(db, 'entries'), orderBy('timestamp', 'desc')));
+            const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    
+            // Update the state with the sorted data
+            setTableData(data);
+    
+            // Fetch confirmed status from Firestore
+            const confirmedData = {};
+            data.forEach(entry => {
+                confirmedData[entry.id] = entry.confirmed || false;
+            });
+            setConfirmedRows(confirmedData);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+>>>>>>> main
     };
     const handleInputSubmit = async () => {
+<<<<<<< HEAD
         if (!selectedMonth || !selectedWeek || !selectedName || !steps || isNaN(steps)) {
             alert('Please fill in all fields correctly.');
             return;
         }
+=======
+        // Validate input
+        if (!selectedMonth || !selectedWeek || !selectedName || !steps || !scenario || isNaN(steps) || isNaN(scenario)) {
+            alert('Please fill in all fields correctly.');
+            return;
+        }
+
+        const getRole = (name) => {
+            switch (name) {
+                case 'Alin':
+                case 'Cindy':
+                case 'Dimas':
+                case 'Fajar':
+                case 'Khusnul':
+                    return 'auto';
+                case 'Alzre':
+                case 'Gita':
+                case 'Izza':
+                case 'Rania':
+                case 'Yuda':
+                    return 'manual';
+                default:
+                    return '';
+            }
+        }
+
+>>>>>>> main
         const newEntry = {
             name: selectedName,
             month: selectedMonth,
             week: selectedWeek,
             steps: parseInt(steps),
             confirmed: false,
+<<<<<<< HEAD
+=======
+            timestamp: new Date(),
+            scenario: scenario,
+            notes: notes,
+            role: getRole(selectedName) // Assigning role based on selectedName
+>>>>>>> main
         };
 
         if (editId !== null) {
@@ -71,6 +134,8 @@ const InputContent = () => {
         setSelectedWeek('');
         setSelectedName('');
         setSteps('');
+        setScenario('');
+        setNotes('');
         setShowModal(false);
     };
 
@@ -79,6 +144,8 @@ const InputContent = () => {
         setSelectedWeek('');
         setSelectedName('');
         setSteps('');
+        setScenario('');
+        setNotes('');
         setShowModal(false);
     }
 
@@ -88,6 +155,8 @@ const InputContent = () => {
         setSelectedWeek(entry.week);
         setSelectedName(entry.name);
         setSteps(entry.steps);
+        setScenario(entry.scenario);
+        setNotes(entry.notes);
         setShowModal(true);
         setEditId(id); // Set the id of the entry being edited
     };
@@ -190,6 +259,12 @@ const InputContent = () => {
 
                     <label className='font2'>Steps</label>
                     <input type="number" className="form-control" value={steps} onChange={e => setSteps(e.target.value)} />
+
+                    <label className='font2'>Scenario</label>
+                    <input type="number" className="form-control" value={scenario} onChange={e => setScenario(e.target.value)} />
+
+                    <label className='font2'>Notes</label>
+                    <textarea className="form-control" value={notes} onChange={e => setNotes(e.target.value)} rows={3} />
                 </Modal.Body>
 
                 <Modal.Footer style={{ backgroundColor: '#F8F7F4' }}>
@@ -223,9 +298,11 @@ const InputContent = () => {
                 <thead style={{ backgroundColor: '#1E1E1E', color: '#EEEDE6' }}>
                     <tr className="align-middle text-center font2" style={{ height: '50px' }}>
                         <th style={{ width: '20%' }}>Name</th>
-                        <th style={{ width: '15%' }}>Month</th>
-                        <th style={{ width: '15%' }}>Week</th>
-                        <th style={{ width: '15%' }}>Steps</th>
+                        <th style={{ width: '10%' }}>Month</th>
+                        <th style={{ width: '10%' }}>Week</th>
+                        <th style={{ width: '10%' }}>Steps</th>
+                        <th style={{ width: '10%' }}>Scenario</th>
+                        <th style={{ width: '25%' }}>Notes</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -236,6 +313,8 @@ const InputContent = () => {
                             <td>{entry.month}</td>
                             <td>{entry.week}</td>
                             <td>{entry.steps}</td>
+                            <td>{entry.scenario}</td>
+                            <td style={{ whiteSpace: 'pre-line' }}>{entry.notes}</td>
                             <td>
                                 {!confirmedRows[entry.id] && (
                                     <>
