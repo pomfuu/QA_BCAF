@@ -1,6 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal, Button } from 'react-bootstrap';
+import { getDocs, collection, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
 import Table from 'react-bootstrap/Table';
+import db from './firebaseconfig';
+import { FaCheck } from 'react-icons/fa';
 
 const InputContent = () => {
     const weeks = ["Week 1", "Week 2", "Week 3", "Week 4", "Week 5"];
@@ -10,16 +13,39 @@ const InputContent = () => {
     // State for managing table data
     const [tableData, setTableData] = useState([]);
     const [showModal, setShowModal] = useState(false);
-    const [editIndex, setEditIndex] = useState(null);
     const [selectedMonth, setSelectedMonth] = useState('');
     const [selectedWeek, setSelectedWeek] = useState('');
     const [selectedName, setSelectedName] = useState('');
     const [steps, setSteps] = useState('');
     const [showConfirm, setShowConfirm] = useState(false);
-    const [deleteIndex, setDeleteIndex] = useState(null);
+    const [editId, setEditId] = useState(null);
+    const [deleteId, setDeleteId] = useState(null);
+    const [confirmedRows, setConfirmedRows] = useState({}); // Store confirmation status for each row
+
+    useEffect(() => {
+        fetchData();
+    }, []);
+
+    const fetchData = async () => {
+        const querySnapshot = await getDocs(collection(db, 'entries'));
+        const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+        // Sort the data based on the timestamp attribute
+        const sortedData = data.sort((a, b) => a.timestamp - b.timestamp);
+
+        // Update the state with the sorted data
+        setTableData(sortedData);
+
+        // Fetch confirmed status from Firestore
+        const confirmedData = {};
+        data.forEach(entry => {
+            confirmedData[entry.id] = entry.confirmed || false;
+        });
+        setConfirmedRows(confirmedData);
+    };
 
     // Function to handle input modal submission
-    const handleInputSubmit = () => {
+    const handleInputSubmit = async () => {
         // Validate input
         if (!selectedMonth || !selectedWeek || !selectedName || !steps || isNaN(steps)) {
             alert('Please fill in all fields correctly.');
@@ -31,21 +57,28 @@ const InputContent = () => {
             month: selectedMonth,
             week: selectedWeek,
             steps: parseInt(steps),
+            confirmed: false, // Add confirmed field with initial value false
         };
 
-        if (editIndex !== null) {
-            // Edit existing entry
-            setTableData(prevData => {
-                const newData = prevData.map((entry, index) =>
-                    index === editIndex ? { ...entry, ...newEntry } : entry
-                );
-                return newData;
-            });
-            setEditIndex(null);
+        if (editId !== null) {
+            // Update existing entry
+            try {
+                await updateDoc(doc(db, 'entries', editId), newEntry);
+                setEditId(null); // Reset editId after updating
+            } catch (error) {
+                console.error('Error updating entry:', error);
+            }
         } else {
             // Add new entry
-            setTableData(prevData => [...prevData, { ...newEntry }]);
+            try {
+                await addDoc(collection(db, 'entries'), newEntry);
+            } catch (error) {
+                console.error('Error adding entry:', error);
+            }
         }
+
+        // Fetch updated data from Firestore
+        await fetchData();
 
         // Reset input values and close modal
         setSelectedMonth('');
@@ -55,77 +88,93 @@ const InputContent = () => {
         setShowModal(false);
     };
 
-    // Handle edit entry
-    const handleEdit = (index) => {
-        setSelectedMonth(tableData[index].month);
-        setSelectedWeek(tableData[index].week);
-        setSelectedName(tableData[index].name);
-        setSteps(tableData[index].steps);
-        setEditIndex(index);
+    const handleCancelSubmit = () => {
+        setSelectedMonth('');
+        setSelectedWeek('');
+        setSelectedName('');
+        setSteps('');
+        setShowModal(false);
+    }
+
+    const handleEdit = (id) => {
+        const entry = tableData.find(entry => entry.id === id);
+        setSelectedMonth(entry.month);
+        setSelectedWeek(entry.week);
+        setSelectedName(entry.name);
+        setSteps(entry.steps);
         setShowModal(true);
+        setEditId(id); // Set the id of the entry being edited
     };
 
-    // Handle delete confirmation
-    const handleDeleteConfirmation = (index) => {
-        setDeleteIndex(index);
-        setShowConfirm(true);
+    const handleDelete = async (id) => {
+        try {
+            setDeleteId(id); // Set the id of the entry to be deleted
+            setShowConfirm(true); // Show the confirmation modal
+        } catch (error) {
+            console.error('Error deleting entry:', error);
+        }
     };
 
-    // Confirm deletion
-    const handleConfirmDelete = () => {
-        setTableData(prevData => {
-            const newData = prevData.filter((entry, i) => i !== deleteIndex);
-            return newData;
-        });
-        setShowConfirm(false);
-        setDeleteIndex(null);
+    const handleConfirmDelete = async () => {
+        try {
+            await deleteDoc(doc(db, 'entries', deleteId));
+            setShowConfirm(false); // Close the confirmation modal
+            // Fetch updated data from Firestore
+            await fetchData();
+        } catch (error) {
+            console.error('Error deleting entry:', error);
+        }
     };
 
-    // Cancel deletion
     const handleCancelDelete = () => {
-        setShowConfirm(false);
-        setDeleteIndex(null);
+        setShowConfirm(false); // Close the confirmation modal
     };
 
-    // Handle delete entry
-    const handleDelete = (index) => {
-        handleDeleteConfirmation(index); // Show confirmation first
+    const handleConfirmEntry = async (id) => {
+        try {
+            // Update the confirmed field to true in Firestore
+            await updateDoc(doc(db, 'entries', id), { confirmed: true });
+            // Update the confirmation status for the specific row in state
+            setConfirmedRows(prevState => ({
+                ...prevState,
+                [id]: true,
+            }));
+        } catch (error) {
+            console.error('Error confirming entry:', error);
+        }
     };
 
     return (
         <div>
-            <button style={{
-                width: '165px',
-                height: '40px',
-                backgroundColor: '#83EC44',
-                color: '#EEEDE6',
-                border: 'none',
-                cursor: 'pointer',
-                borderRadius: '5px',
-                transition: 'background-color 0.3s, color 0.3s',
-                marginBottom: '20px',
-
-            }}
+            <button
+                style={{
+                    width: '165px',
+                    height: '40px',
+                    backgroundColor: '#83EC44',
+                    color: '#EEEDE6',
+                    border: 'none',
+                    cursor: 'pointer',
+                    borderRadius: '5px',
+                    transition: 'background-color 0.3s, color 0.3s',
+                    marginBottom: '20px',
+                }}
                 className='font2'
-
                 onMouseEnter={(e) => {
                     e.target.style.backgroundColor = '#DAD6CA';
                     e.target.style.color = '#1E1E1E';
-                }} // Change background color on hover
-
+                }}
                 onMouseLeave={(e) => {
                     e.target.style.backgroundColor = '#83EC44';
                     e.target.style.color = '#EEEDE6';
-                }} // Change background color on hover
-                onClick={() => setShowModal(true)}>Add Entry</button>
+                }}
+                onClick={() => setShowModal(true)}>
+                Add Entry
+            </button>
 
             {/* Input Modal */}
-
             <Modal show={showModal} onHide={() => setShowModal(false)}>
-                <Modal.Header closeButton style={{
-                    backgroundColor: '#F8F7F4',
-                }}>
-                    <Modal.Title>{editIndex !== null ? 'Edit Entry' : 'Add Entry'}</Modal.Title>
+                <Modal.Header closeButton style={{ backgroundColor: '#F8F7F4' }}>
+                    <Modal.Title>{'Add Entry'}</Modal.Title>
                 </Modal.Header>
 
                 <Modal.Body style={{ backgroundColor: '#F8F7F4' }}>
@@ -157,45 +206,13 @@ const InputContent = () => {
                     <input type="number" className="form-control" value={steps} onChange={e => setSteps(e.target.value)} />
                 </Modal.Body>
 
-                <Modal.Footer
-                    style={{
-                        backgroundColor: '#F8F7F4',
-                    }}>
-                    <Button variant="secondary"
-                        style={{
-                            backgroundColor: '#DAD6CA',
-                            outline: 'none',
-                            border: 'none',
-                            color: '#1E1E1E'
-                        }}
-                        onMouseEnter={(e) => {
-                            e.target.style.backgroundColor = '#DAD6CA';
-                            e.target.style.color = '#EEEDE6';
-                        }} // Change background color on hover
-
-                        onMouseLeave={(e) => {
-                            e.target.style.backgroundColor = '#DAD6CA';
-                            e.target.style.color = '#1E1E1E';
-                        }}
-
-                        onClick={() => setShowModal(false)}>Close</Button>
-                    <Button variant="primary"
-                        style={{
-                            backgroundColor: '#83EC44',
-                            outline: 'none',
-                            border: 'none',
-                            color: '#1E1E1E'
-                        }}
-                        onMouseEnter={(e) => {
-                            e.target.style.backgroundColor = '#83EC44';
-                            e.target.style.color = '#EEEDE6';
-                        }} // Change background color on hover
-
-                        onMouseLeave={(e) => {
-                            e.target.style.backgroundColor = '#83EC44';
-                            e.target.style.color = '#1E1E1E';
-                        }}
-                        onClick={handleInputSubmit}>{editIndex !== null ? 'Update' : 'Submit'}</Button>
+                <Modal.Footer style={{ backgroundColor: '#F8F7F4' }}>
+                    <Button variant="secondary" onClick={handleCancelSubmit}>
+                        Close
+                    </Button>
+                    <Button variant="primary" onClick={handleInputSubmit}>
+                        Submit
+                    </Button>
                 </Modal.Footer>
             </Modal>
 
@@ -204,7 +221,7 @@ const InputContent = () => {
                 <Modal.Header closeButton>
                     <Modal.Title>Confirm Deletion</Modal.Title>
                 </Modal.Header>
-                <Modal.Body>hapus</Modal.Body>
+                <Modal.Body>Are you sure you want to delete this entry?</Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={handleCancelDelete}>
                         Cancel
@@ -217,7 +234,7 @@ const InputContent = () => {
 
             {/* Table */}
             <Table striped bordered>
-                <thead >
+                <thead style={{ backgroundColor: '#1E1E1E', color: '#EEEDE6' }}>
                     <tr className="align-middle text-center font2" style={{ height: '50px' }}>
                         <th style={{ width: '20%' }}>Name</th>
                         <th style={{ width: '15%' }}>Month</th>
@@ -228,19 +245,28 @@ const InputContent = () => {
                 </thead>
                 <tbody>
                     {tableData.map((entry, index) => (
-                        <tr key={index} className="align-middle text-center" style={{ height: '50px' }}>
+                        <tr key={entry.id} className={`align-middle text-center ${index % 2 === 0 ? 'bg-light' : ''}`} style={{ height: '50px' }}>
                             <td>{entry.name}</td>
                             <td>{entry.month}</td>
                             <td>{entry.week}</td>
                             <td>{entry.steps}</td>
                             <td>
-                                <button className="btn btn-primary" onClick={() => handleEdit(index)}>Edit</button>
-                                <button className="btn btn-danger" onClick={() => handleDelete(index)}>Delete</button>
+                                {!confirmedRows[entry.id] && (
+                                    <>
+                                        <button className="btn btn-primary" onClick={() => handleEdit(entry.id)}>Edit</button>
+                                        <button className="btn btn-danger" onClick={() => handleDelete(entry.id)}>Delete</button>
+                                        <button className="btn btn-secondary" onClick={() => handleConfirmEntry(entry.id)}>Confirm</button>
+                                    </>
+                                )}
+                                {confirmedRows[entry.id] && (
+                                    <FaCheck style={{ color: 'green' }} />
+                                )}
                             </td>
                         </tr>
                     ))}
                 </tbody>
             </Table>
+
         </div>
     );
 };
