@@ -64,6 +64,19 @@ const SummaryPage = () => {
       setStepsDebt(debt);
       setAveragePercent(percent);
       console.log('Summary generated successfully.');
+
+      // Add summary data to Firestore
+      for (const month in summaryData) {
+        const summaryDocRef = doc(db, 'summary', month);
+        await setDoc(summaryDocRef, {
+          month,
+          data: summaryData[month],
+          monthlyTarget: target,
+          stepsDebt: debt,
+          averagePercent: percent
+        });
+        console.log(`Summary for ${month} added to Firestore.`);
+      }
     } catch (error) {
       console.error('Error generating summary:', error);
     }
