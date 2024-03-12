@@ -4,6 +4,7 @@ import { useRoutes } from 'react-router-dom';
 import Home from './Home';
 import Table from './Table';
 import InputData from './InputData';
+import Summary from './Summary';
 
 const routes = [
   {
@@ -14,6 +15,10 @@ const routes = [
     path: "/input_data",
     element: <InputData />,
   },
+  {
+    path: "/summary",
+    element: <Summary />,
+  }
 ];
 
 function App() {

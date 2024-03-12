@@ -55,3 +55,23 @@
 .py-4:hover .tooltip {
     visibility: visible;
 }
+
+/* Custom CSS to override Bootstrap styles */
+.custom-table {
+    background-color: #DAD6CA; /* Set striped table background color */
+    border-color: #EEEDE6; /* Set table border color */
+}
+
+.custom-table-header {
+    background-color: #1E1E1E !important; /* Set table header background color */
+    color: #EEEDE6 !important; /* Set table header font color */
+}
+
+.custom-table-body{
+    background-color: #DAD6CA !important;
+    color: #1e1e1e !important;
+}
+
+.highlight-table{
+    background-color: "#83EC44" !important;
+}

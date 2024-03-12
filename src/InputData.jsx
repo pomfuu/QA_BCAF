@@ -4,7 +4,6 @@ import Menu from "./Menu";
 import Header from "./Header";
 import InputContent from "./InputContent";
 
-
 const InputData = () => {
     return (
         <div>
