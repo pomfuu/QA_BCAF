@@ -11,10 +11,13 @@ import robot6 from '../../public/Assets/robot_6.svg';
 
 const ChartsFebruari = () => {
     const [data, setData] = useState([]);
+    const [totalPeople, setTotalPeople] = useState(0);
+    const [peoplePassedGoal, setPeoplePassedGoal] = useState(0);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
+<<<<<<< Updated upstream
                 const response = await axios.get('https://sheet.best/api/sheets/2f61bb11-7793-47ec-8ffe-40700b4097e4');
                 const newData = response.data || [];
                 setData(newData);
@@ -24,6 +27,28 @@ const ChartsFebruari = () => {
         };
 
         fetchData();
+=======
+                const querySnapshot = await getDocs(collection(db, 'entries'));
+                const newData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                setData(newData);
+
+                let totalPeopleCount = 0;
+                let peoplePassedGoalCount = 0;
+                newData.forEach(item => {
+                    totalPeopleCount++;
+                    if (parseInt(item.totalFeb) >= goal(item.role)) {
+                        peoplePassedGoalCount++;
+                    }
+                });
+                setTotalPeople(totalPeopleCount);
+                setPeoplePassedGoal(peoplePassedGoalCount);
+            } catch (error) {
+                console.error('Error fetching data from Firebase:', error);
+            }
+        };
+
+        fetchDataFromFirestore();
+>>>>>>> Stashed changes
     }, []);
 
     const getRobotImage = (total, role) => {
@@ -58,7 +83,21 @@ const ChartsFebruari = () => {
                 {data.slice(0, Math.ceil(data.length / 2))
                     .filter(item => item.week1Feb !== null && item.week2Feb !== null && item.week3Feb !== null && item.week4Feb !== null && item.week5Feb !== null)
                     .map((item, index) => {
+<<<<<<< Updated upstream
                         const formattedPercentage = Math.round(parseFloat(item.persentaseFeb));
+=======
+                        const totalFeb = (
+                            (item.week1Feb !== "" ? parseInt(item.week1Feb) : 0) +
+                            (item.week2Feb !== "" ? parseInt(item.week2Feb) : 0) +
+                            (item.week3Feb !== "" ? parseInt(item.week3Feb) : 0) +
+                            (item.week4Feb !== "" ? parseInt(item.week4Feb) : 0) +
+                            (item.week5Feb !== "" ? parseInt(item.week5Feb) : 0)
+                        );
+                        const goalVal = goal(item.role)
+                        const persentase = (totalFeb/goalVal) * 100
+                        const formattedPercentage = Math.round(parseFloat(persentase));
+                        
+>>>>>>> Stashed changes
                         return (
                             <div key={index} className="container-fluid align-items-center">
                                 <div className="col-12 mb-2 d-flex align-items-center">

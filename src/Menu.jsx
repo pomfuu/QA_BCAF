@@ -35,7 +35,7 @@ const Menu = () => {
                         </Link>
                     </div>
                     <div className="text-end"> 
-                        <Link to="/input_data">
+                        <Link to="/input">
                             <img className="img-fluid" src={mnu} alt="Menu" style={{ height:'1.5vw' }} />
                         </Link>
                     </div>

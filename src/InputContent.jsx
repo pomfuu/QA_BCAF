@@ -8,9 +8,15 @@ import { FaCheck } from 'react-icons/fa';
 
 const InputContent = () => {
     const weeks = ["Week 1", "Week 2", "Week 3", "Week 4", "Week 5"];
+<<<<<<< Updated upstream
     const names = ["Alin", "Alzre", "Cindy", "Dimas", "Fajar", "Gita", "Izza", "Khusnul", "Rania", "Yuda"];
     const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
+=======
+    const names = ["Alin", "Alzre", "Cindy", "Dimas", "Fajar", "Izza", "Khusnul", "Rania", "Yuda", "Gita"];
+    const months = ["January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"];
+>>>>>>> Stashed changes
     // State for managing table data
     const [tableData, setTableData] = useState([]);
     const [showModal, setShowModal] = useState(false);
@@ -30,6 +36,7 @@ const InputContent = () => {
     }, []);
 
     const fetchData = async () => {
+<<<<<<< Updated upstream
         try {
             const querySnapshot = await getDocs(query(collection(db, 'entries'), orderBy('timestamp', 'desc')));
             const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -46,6 +53,17 @@ const InputContent = () => {
         } catch (error) {
             console.error('Error fetching data:', error);
         }
+=======
+        const querySnapshot = await getDocs(collection(db, 'entries'));
+        const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const sortedData = data.sort((a, b) => a.timestamp - b.timestamp);
+        setTableData(sortedData);
+        const confirmedData = {};
+        data.forEach(entry => {
+            confirmedData[entry.id] = entry.confirmed || false;
+        });
+        setConfirmedRows(confirmedData);
+>>>>>>> Stashed changes
     };
 
     // Function to handle input modal submission
