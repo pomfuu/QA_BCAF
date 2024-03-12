@@ -12,7 +12,7 @@ import robot6 from '../../public/Assets/robot_6.svg';
 const ChartsMaret = () => {
 
     const [data] = useState([
-        {"name":"Alzre","week1Feb":"1583","week2Feb":"","week3Feb":"","week4Feb":"","week5Feb":"","totalFeb":"1583","persentaseFeb":"21","role":"manual"},
+        {"name":"Alzre","week1Feb":"1583","week2Feb":"1900","week3Feb":"","week4Feb":"","week5Feb":"","totalFeb":"1583","persentaseFeb":"21","role":"manual"},
         {"name":"Khusnul","week1Feb":"1682","week2Feb":"","week3Feb":"","week4Feb":"","week5Feb":"","totalFeb":"1682","persentaseFeb":"18","role":"auto"},
         {"name":"Izza","week1Feb":"1552","week2Feb":"","week3Feb":"","week4Feb":"","week5Feb":"","totalFeb":"1552","persentaseFeb":"21","role":"manual"},
         {"name":"Rania","week1Feb":"1456","week2Feb":"","week3Feb":"","week4Feb":"","week5Feb":"","totalFeb":"1456","persentaseFeb":"19","role":"manual"},
