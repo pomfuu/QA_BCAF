@@ -5,6 +5,13 @@ import { query, orderBy } from 'firebase/firestore';
 import Table from 'react-bootstrap/Table';
 import db from './firebaseconfig';
 import { FaCheck } from 'react-icons/fa';
+import { FaEdit } from "react-icons/fa";
+import { FaDeleteLeft } from "react-icons/fa6";
+import { FaCheckSquare } from "react-icons/fa";
+import { FaRegNoteSticky } from "react-icons/fa6";
+
+
+
 import './main.css'
 
 const InputContent = () => {
@@ -25,6 +32,7 @@ const InputContent = () => {
   const [editId, setEditId] = useState(null);
   const [deleteId, setDeleteId] = useState(null);
   const [confirmedRows, setConfirmedRows] = useState({}); // Store confirmation status for each row
+  const [selectedNote, setSelectedNote] = useState(''); // State for selected note to display in modal
 
   useEffect(() => {
     fetchData();
@@ -178,6 +186,14 @@ const InputContent = () => {
     }
   };
 
+  const handleNoteClick = (note) => {
+    setSelectedNote(note);
+  };
+
+  const handleCloseNoteModal = () => {
+    setSelectedNote('');
+  };
+
   return (
     <div>
       <button
@@ -250,7 +266,7 @@ const InputContent = () => {
           <Button variant="secondary" onClick={handleCancelSubmit}>
             Close
           </Button>
-          <Button variant="primary" onClick={handleInputSubmit}>
+          <Button style={{backgroundColor: '#4CBE08'}} onClick={handleInputSubmit}>
             Submit
           </Button>
         </Modal.Footer>
@@ -272,8 +288,23 @@ const InputContent = () => {
         </Modal.Footer>
       </Modal>
 
+      {/* Notes Modal */}
+      <Modal show={selectedNote !== ''} onHide={handleCloseNoteModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Notes</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <pre>{selectedNote}</pre>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseNoteModal}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
       {/* Table */}
-      <Table>
+      <Table striped bordered>
         <thead>
           <tr className="align-middle text-center" style={{ height: '50px' }}>
             <th className="custom-table-header" style={{ width: '20%' }}>Name</th>
@@ -281,37 +312,50 @@ const InputContent = () => {
             <th className="custom-table-header" style={{ width: '10%' }}>Week</th>
             <th className="custom-table-header" style={{ width: '10%' }}>Steps</th>
             <th className="custom-table-header" style={{ width: '10%' }}>Scenario</th>
-            <th className="custom-table-header" style={{ width: '25%' }}>Notes</th>
-            <th className="custom-table-header">Action</th>
+            <th className="custom-table-header" style={{ width: '10%' }}>Notes</th>
+            <th className="custom-table-header" style={{ width: '30%' }}>Action</th>
           </tr>
         </thead>
         <tbody>
           {tableData.map((entry, index) => (
-            <tr key={entry.id} className={`align-middle text-center ${index % 2 === 0 ? 'bg-light' : ''}`} style={{ height: '50px' }}>
-              <td className='custom-table-body'>{entry.name}</td>
-              <td className='custom-table-body'>{entry.month}</td>
-              <td className='custom-table-body'>{entry.week}</td>
-              <td className='custom-table-body'>{entry.steps}</td>
-              <td className='custom-table-body'>{entry.scenario}</td>
-              <td className='custom-table-body' style={{ whiteSpace: 'pre-line' }}>{entry.notes}</td>
+            <tr key={entry.id} className={`align-middle text-center ${index % 2 === 0 ? 'Z' : ''}`} style={{ height: '50px' }}>
+              <td>{entry.name}</td>
+              <td>{entry.month}</td>
+              <td>{entry.week}</td>
+              <td>{entry.steps}</td>
+              <td>{entry.scenario}</td>
+              <td>
+                <button className="btn btn-link" onClick={() => handleNoteClick(entry.notes)}>
+                  <FaRegNoteSticky style={{color: '#1E1E1E'}}/>
+                  </button>
+              </td>
               <td>
                 {!confirmedRows[entry.id] && (
                   <>
-                    <button className="btn btn-primary" onClick={() => handleEdit(entry.id)}>Edit</button>
-                    <button className="btn btn-danger" onClick={() => handleDelete(entry.id)}>Delete</button>
-                    <button className="btn btn-secondary" onClick={() => handleConfirmEntry(entry.id)}>Confirm</button>
+                    <button className="edit-button" onClick={() => handleEdit(entry.id)}>
+                      <FaEdit className='svg-container' style={{ color: '#EEEDE6' }} />
+                      <span>Edit</span>
+                    </button>
+
+                    <button className="delete-button" onClick={() => handleDelete(entry.id)}>
+                      <FaDeleteLeft className='svg-container' style={{ color: '#EEEDE6' }} />
+                      <span>Remove</span>
+                    </button>
+
+                    <button className="confirm-button" onClick={() => handleConfirmEntry(entry.id)}>
+                      <FaCheckSquare className='svg-container'style={{ color: '#EEEDE6' }} />
+                      <span>Confirm</span>
+                    </button>
                   </>
                 )}
                 {confirmedRows[entry.id] && (
-                  <FaCheck style={{ color: 'green' }} />
+                  <FaCheck style={{ color: '#4CBE08' }} />
                 )}
               </td>
             </tr>
           ))}
         </tbody>
       </Table>
-
-
 
     </div>
   );

@@ -146,7 +146,7 @@ const SummaryPage = () => {
             <tbody>
               {Object.entries(summaryData[selectedMonth] || {}).sort(([, a], [, b]) => b.totalSteps - a.totalSteps).map(([name, data], index) => (
                 <tr key={index} className='align-middle text-center'> 
-                  <td>{name}</td>
+                  <td style={{backgroundColor: '#DAD6CA'}}>{name}</td>
                   {Array.from({ length: 5 }, (_, i) => i + 1).map(week => {
                     const steps = data.weeks[`Week ${week}`] ? data.weeks[`Week ${week}`].steps : 0;
                     const role = getRole(name);
@@ -154,10 +154,10 @@ const SummaryPage = () => {
                     const backgroundColor = steps < target ? '#CF3D3D' : '#83EC44';
                     return <td key={week} onClick={() => handleCellClick(name, week)} style={{ backgroundColor }}>{steps}</td>;
                   })}
-                  <td>{data.totalSteps || 0}</td>
-                  <td>{monthlyTarget[name] || 0}</td>
-                  <td>{stepsDebt[name] || 0}</td>
-                  <td>{averagePercent[name] ? averagePercent[name].toFixed(2) + '%' : '0%'}</td>
+                  <td style={{backgroundColor: '#DAD6CA'}}>{data.totalSteps || 0}</td>
+                  <td style={{backgroundColor: '#DAD6CA'}}>{monthlyTarget[name] || 0}</td>
+                  <td style={{backgroundColor: '#DAD6CA'}}>{stepsDebt[name] || 0}</td>
+                  <td style={{backgroundColor: '#DAD6CA'}}>{averagePercent[name] ? averagePercent[name].toFixed(2) + '%' : '0%'}</td>
                 </tr>
               ))}
             </tbody>
