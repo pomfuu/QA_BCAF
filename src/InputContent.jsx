@@ -34,9 +34,38 @@ const InputContent = () => {
   const [confirmedRows, setConfirmedRows] = useState({}); // Store confirmation status for each row
   const [selectedNote, setSelectedNote] = useState(''); // State for selected note to display in modal
 
+<<<<<<< HEAD
   useEffect(() => {
     fetchData();
   }, []);
+=======
+    const fetchData = async () => {
+        try {
+            const querySnapshot = await getDocs(query(collection(db, 'entries'), orderBy('timestamp', 'desc')));
+            const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    
+            // Update the state with the sorted data
+            setTableData(data);
+    
+            // Fetch confirmed status from Firestore
+            const confirmedData = {};
+            data.forEach(entry => {
+                confirmedData[entry.id] = entry.confirmed || false;
+            });
+            setConfirmedRows(confirmedData);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    };
+
+    // Function to handle input modal submission
+    const handleInputSubmit = async () => {
+        // Validate input
+        if (!selectedMonth || !selectedWeek || !selectedName || !steps || !scenario || isNaN(steps) || isNaN(scenario)) {
+            alert('Please fill in all fields correctly.');
+            return;
+        }
+>>>>>>> main
 
   const fetchData = async () => {
     try {
