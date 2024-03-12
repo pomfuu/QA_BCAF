@@ -46,7 +46,7 @@ const ChartsAll = () => {
                     </DropdownButton>
                 </div>
         </div>
-        <div className="row">
+        <div className="row container-fluid">
             <div className="col-12">
                 {selectedMonth === 'February' && <ChartsFebruari />}
                 {selectedMonth === 'March' && <ChartsMaret />}
