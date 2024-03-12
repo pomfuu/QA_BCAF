@@ -318,7 +318,7 @@ const InputContent = () => {
         </thead>
         <tbody>
           {tableData.map((entry, index) => (
-            <tr key={entry.id} className={`align-middle text-center ${index % 2 === 0 ? 'Z' : ''}`} style={{ height: '50px' }}>
+            <tr key={entry.id} className='align-middle text-center' style={{ height: '50px' }}>
               <td>{entry.name}</td>
               <td>{entry.month}</td>
               <td>{entry.week}</td>
