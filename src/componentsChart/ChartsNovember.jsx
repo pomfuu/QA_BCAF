@@ -63,11 +63,11 @@ const ChartsNovember = () => {
     }, []);
     
     const getRobotImage = (total, role) => {
-        let target = 7500;
+        let target = 6000;
         let robotImg = robot1;
 
         if (role === 'auto') {
-            target = 9000;
+            target = 7200;
         }
 
         const percentage = (total / target) * 100;
@@ -90,7 +90,7 @@ const ChartsNovember = () => {
     const goal = (role) => {
         let goalVal = 6000;
         if (role === 'auto') {
-            goalVal = 7500;
+            goalVal = 7200;
         }
         return goalVal;
     }

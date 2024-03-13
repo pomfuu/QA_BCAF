@@ -63,11 +63,11 @@ const ChartsJuni = () => {
     }, []);
     
     const getRobotImage = (total, role) => {
-        let target = 7500;
+        let target = 5700;
         let robotImg = robot1;
 
         if (role === 'auto') {
-            target = 9000;
+            target = 6840;
         }
 
         const percentage = (total / target) * 100;
@@ -88,9 +88,9 @@ const ChartsJuni = () => {
     };
 
     const goal = (role) => {
-        let goalVal = 6000;
+        let goalVal = 5700;
         if (role === 'auto') {
-            goalVal = 7500;
+            goalVal = 6840;
         }
         return goalVal;
     }
@@ -206,9 +206,9 @@ const ChartsJuni = () => {
 };
 
 function renderBars(total, weekValue, color, role) {
-    let goal = 6000;
+    let goal = 5700;
     if (role === 'auto') {
-      goal = 7200;
+      goal = 6840;
     }
     
     const parsedWeekValue = parseInt(weekValue, 10);
