@@ -102,7 +102,7 @@ const InputContent = () => {
       name: selectedName,
       month: selectedMonth,
       week: selectedWeek,
-      steps: parseInt(steps),
+      steps: parseFloat(steps).toFixed(2),
       confirmed: false,
       timestamp: new Date(),
       scenario: scenario,
