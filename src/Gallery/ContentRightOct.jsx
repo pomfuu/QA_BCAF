@@ -14,7 +14,8 @@ const ContentRightOct = ({ selectedMonth }) => {
         week2: '',
         week3: '',
         week4: '',
-        week5: ''
+        week5: '',
+        totalWeek: ''
     });
 
     useEffect(() => {
@@ -117,7 +118,7 @@ const ContentRightOct = ({ selectedMonth }) => {
                     <input type="file" ref={fileInputRef} style={{ display: 'none' }} accept="image/*" onChange={handleFileUpload} />
                 </div>
                 <div className="col-lg-5">
-                    <div style={{ backgroundColor: '#00BDB2' }} className="text-white font2 rounded-2 px-4 py-1">OCTOBER ACHIEVEMENTS</div>
+                    <div style={{ backgroundColor: '#00BDB2' }} className="text-white font2 rounded-2 px-4 py-1">AUGUST ACHIEVEMENTS</div>
                     <div className='mt-2'>
                         <Table size='sm' hover>
                             <thead className='text-center'>
@@ -127,6 +128,7 @@ const ContentRightOct = ({ selectedMonth }) => {
                                     <th className='text-white' style={{ backgroundColor:'#FFD542' }}>Week 3</th>
                                     <th className='text-white' style={{ backgroundColor:'#84E44B' }}>Week 4</th>
                                     <th className='text-white' style={{ backgroundColor:'#26D2C7' }}>Week 5</th>
+                                    <th className='text-white' style={{ backgroundColor:'#1e1e1e' }}>Total</th>
                                 </tr>
                             </thead>
                             <tbody className='text-center'>
@@ -136,6 +138,7 @@ const ContentRightOct = ({ selectedMonth }) => {
                                     <td contentEditable onBlur={(e) => handleWeekDataChange('week3', e.target.innerText)}>{weekData.week3}</td>
                                     <td contentEditable onBlur={(e) => handleWeekDataChange('week4', e.target.innerText)}>{weekData.week4}</td>
                                     <td contentEditable onBlur={(e) => handleWeekDataChange('week5', e.target.innerText)}>{weekData.week5}</td>
+                                    <td contentEditable onBlur={(e) => handleWeekDataChange('total', e.target.innerText)}>{weekData.total}</td>
                                 </tr>
                             </tbody>
                         </Table>
@@ -151,7 +154,7 @@ const ContentRightOct = ({ selectedMonth }) => {
                             LEAD
                         </div>
                         <div style={{ color:'#1e1e1e' }} className="col-9 mt-1">
-                            Automation: <b>1800/Week</b> or <b>7200/Month</b> | Manual: <b>1500/Week</b> or <b>6000/Month</b>
+                            QA Automation: <b>1800/Week</b> or <b>7200/Month</b> <br /> QA Manual: <b>1500/Week</b> or <b>6000/Month</b>
                         </div>
                     </div>
                 </div>

@@ -126,10 +126,10 @@ const SummaryPage = () => {
       case 'Khusnul':
         return 'auto';
       case 'Alzre':
-      case 'Gita':
       case 'Izza':
       case 'Rania':
       case 'Yuda':
+      case 'Gita':
         return 'manual';
       default:
         return '';

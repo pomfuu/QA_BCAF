@@ -19,10 +19,13 @@ const ChartsFebruari = () => {
             try {
                 const februarySummaryDocRef = doc(db, 'summary', 'February');
                 const februarySummaryDocSnapshot = await getDoc(februarySummaryDocRef);
-
+        
                 if (februarySummaryDocSnapshot.exists()) {
                     const februarySummaryData = februarySummaryDocSnapshot.data();
-                    const newData = Object.keys(februarySummaryData.data).map(name => {
+                    const autoData = [];
+                    const manualData = [];
+                    Object.keys(februarySummaryData.data).forEach(name => {
+                        const role = ['Alin', 'Cindy', 'Daniel', 'Dimas', 'Khusnul', 'Fajar'].includes(name) ? 'auto' : 'manual';
                         const weeks = februarySummaryData.data[name].weeks;
                         const weekSteps = {
                             'Week 1': weeks['Week 1'] ? weeks['Week 1'].steps : 0,
@@ -31,12 +34,23 @@ const ChartsFebruari = () => {
                             'Week 4': weeks['Week 4'] ? weeks['Week 4'].steps : 0,
                             'Week 5': weeks['Week 5'] ? weeks['Week 5'].steps : 0,
                         };
-                        return {
+                        const item = {
                             name,
+                            role,
                             week: weekSteps
                         };
+                        if (role === 'auto') {
+                            autoData.push(item);
+                        } else {
+                            manualData.push(item);
+                        }
                     });
-                    newData.sort((a, b) => a.name.localeCompare(b.name));
+                    manualData.sort((a, b) => {
+                        if (a.name === 'Gita') return 1;
+                        if (b.name === 'Gita') return -1;
+                        return a.name.localeCompare(b.name);
+                    });
+                    const newData = autoData.concat(manualData);
                     setData(newData);
                 } else {
                     console.error('Document for February does not exist in Firestore.');
@@ -45,7 +59,6 @@ const ChartsFebruari = () => {
                 console.error('Error fetching data from Firestore:', error);
             }
         };
-
         fetchDataFromFirestore();
     }, []);
     
@@ -87,7 +100,7 @@ const ChartsFebruari = () => {
             <div className="row mt-4">
                 <div className="col-lg-6 ">
                 {data.slice(0, Math.ceil(data.length / 2))
-                    .filter(item => item.week !== null || item.week2Feb !== null || item.week3Feb !== null || item.week4Feb !== null || item.week5Feb !== null)
+                    .filter(item => item.role === 'auto' && (item.week !== null || item.week2Feb !== null || item.week3Feb !== null || item.week4Feb !== null || item.week5Feb !== null))
                     .map((item, index) => {
                         let week1 = item.week && item.week['Week 1'] ? item.week['Week 1'] : null;
                         let week2 = item.week && item.week['Week 2'] ? item.week['Week 2'] : null;
@@ -138,7 +151,7 @@ const ChartsFebruari = () => {
                 </div>
                 <div className="col-lg-6">
                 {data.slice(Math.ceil(data.length / 2))
-                    .filter(item => item.week !== null || item.week2Feb !== null || item.week3Feb !== null || item.week4Feb !== null || item.week5Feb !== null)
+                    .filter(item => item.role === 'manual' && (item.week !== null || item.week2Feb !== null || item.week3Feb !== null || item.week4Feb !== null || item.week5Feb !== null))
                     .map((item, index) => {
                         const week1 = item.week && item.week['Week 1'] ? item.week['Week 1'] : 0;
                         let week2 = item.week && item.week['Week 2'] ? item.week['Week 2'] : null;
