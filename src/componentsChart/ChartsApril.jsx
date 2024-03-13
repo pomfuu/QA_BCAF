@@ -99,7 +99,7 @@ const ChartsApril = () => {
         <div>
             <div className="row mt-4">
                 <div className="col-lg-6 ">
-                {data.slice(0, Math.ceil(data.length / 2))
+                {data
                     .filter(item => item.role === 'auto' && (item.week !== null || item.week2Feb !== null || item.week3Feb !== null || item.week4Feb !== null || item.week5Feb !== null))
                     .map((item, index) => {
                         let week1 = item.week && item.week['Week 1'] ? item.week['Week 1'] : null;
@@ -150,7 +150,7 @@ const ChartsApril = () => {
                 }
                 </div>
                 <div className="col-lg-6">
-                {data.slice(Math.ceil(data.length / 2))
+                {data
                     .filter(item => item.role === 'manual' && (item.week !== null || item.week2Feb !== null || item.week3Feb !== null || item.week4Feb !== null || item.week5Feb !== null))
                     .map((item, index) => {
                         const week1 = item.week && item.week['Week 1'] ? item.week['Week 1'] : 0;
