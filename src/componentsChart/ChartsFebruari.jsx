@@ -193,9 +193,9 @@ const ChartsFebruari = () => {
 };
 
 function renderBars(total, weekValue, color, role) {
-    let goal = 7500;
+    let goal = 6000;
     if (role === 'auto') {
-      goal = 9000;
+      goal = 7200;
     }
     
     const parsedWeekValue = parseInt(weekValue, 10);
