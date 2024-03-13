@@ -38,8 +38,8 @@ const SummaryPage = () => {
           if (!summaryData[month][name].weeks[week]) {
             summaryData[month][name].weeks[week] = { steps: 0, notes };
           }
-          summaryData[month][name].weeks[week].steps += steps;
-          summaryData[month][name].totalSteps += steps;
+          summaryData[month][name].weeks[week].steps += parseFloat(steps);
+          summaryData[month][name].totalSteps += parseFloat(steps);
         }
       });
 
@@ -51,15 +51,15 @@ const SummaryPage = () => {
         const lastDay = new Date(year, month + 1, 0);
         const daysInMonth = lastDay.getDate() - firstDay.getDate() + 1;
         return Math.ceil(daysInMonth / 7);
-    }
+      }
 
-    const getMonthNumber = (monthName) => {
-      const months = {
+      const getMonthNumber = (monthName) => {
+        const months = {
           January: 0, February: 1, March: 2, April: 3, May: 4, June: 5,
           July: 6, August: 7, September: 8, October: 9, November: 10, December: 11
-      };
-      return months[monthName];
-  }
+        };
+        return months[monthName];
+      }
 
       // Calculate monthly target, steps debt, and average percent for each person
       const target = {};
@@ -74,7 +74,7 @@ const SummaryPage = () => {
           const role = getRole(name); // Get role using the getRole function
           //////////////////////////////////////////////////////////////////////////////
           target[name] = role === 'auto' ? 1800 * weeksInCurrentMonth : 1500 * weeksInCurrentMonth;
-          debt[name] = target[name] - steps;
+          debt[name] = parseFloat(target[name] - steps);
           percent[name] = (steps / target[name]) * 100;
         }
       }
@@ -137,10 +137,10 @@ const SummaryPage = () => {
 
   return (
     <div>
-      <select 
-        value={selectedMonth} 
-        onChange={handleMonthChange} 
-        className='font2' 
+      <select
+        value={selectedMonth}
+        onChange={handleMonthChange}
+        className='font2'
         style={{
           width: '165px',
           height: '40px',
@@ -177,19 +177,19 @@ const SummaryPage = () => {
             </thead>
             <tbody>
               {Object.entries(summaryData[selectedMonth] || {}).sort(([, a], [, b]) => b.totalSteps - a.totalSteps).map(([name, data], index) => (
-                <tr key={index} className='align-middle text-center'> 
-                  <td style={{backgroundColor: '#DAD6CA'}}>{name}</td>
+                <tr key={index} className='align-middle text-center'>
+                  <td style={{ backgroundColor: '#DAD6CA' }}>{name}</td>
                   {Array.from({ length: 5 }, (_, i) => i + 1).map(week => {
                     const steps = data.weeks[`Week ${week}`] ? data.weeks[`Week ${week}`].steps : 0;
                     const role = getRole(name);
                     const target = role === 'auto' ? 1800 : 1500;
                     const backgroundColor = steps < target ? '#CF3D3D' : '#83EC44';
-                    return <td key={week} onClick={() => handleCellClick(name, week)} style={{ backgroundColor, cursor: 'pointer'}}>{steps}</td>;
+                    return <td key={week} onClick={() => handleCellClick(name, week)} style={{ backgroundColor, cursor: 'pointer' }}>{steps}</td>;
                   })}
-                  <td style={{backgroundColor: '#DAD6CA'}}>{data.totalSteps || 0}</td>
-                  <td style={{backgroundColor: '#DAD6CA'}}>{monthlyTarget[name] || 0}</td>
-                  <td style={{backgroundColor: '#DAD6CA'}}>{stepsDebt[name] || 0}</td>
-                  <td style={{backgroundColor: '#DAD6CA'}}>{averagePercent[name] ? averagePercent[name].toFixed(2) + '%' : '0%'}</td>
+                  <td style={{ backgroundColor: '#DAD6CA' }}>{data.totalSteps || 0}</td>
+                  <td style={{ backgroundColor: '#DAD6CA' }}>{monthlyTarget[name] || 0}</td>
+                  <td style={{ backgroundColor: '#DAD6CA' }}>{stepsDebt[name] || 0}</td>
+                  <td style={{ backgroundColor: '#DAD6CA' }}>{averagePercent[name] ? averagePercent[name].toFixed(2) + '%' : '0%'}</td>
                 </tr>
               ))}
             </tbody>
