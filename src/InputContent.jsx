@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import { getDocs, collection, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
@@ -16,7 +17,7 @@ import './main.css'
 
 const InputContent = () => {
   const weeks = ["Week 1", "Week 2", "Week 3", "Week 4", "Week 5"];
-  const names = ["Alin", "Alzre", "Cindy", "Dimas", "Fajar", "Gita", "Izza", "Khusnul", "Rania", "Yuda"];
+  const names = ["Alin", "Alzre", "Cindy", "Daniel", "Dimas", "Fajar", "Gita", "Izza", "Khusnul", "Rania", "Yuda"];
   const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
   // State for managing table data
@@ -34,38 +35,9 @@ const InputContent = () => {
   const [confirmedRows, setConfirmedRows] = useState({}); // Store confirmation status for each row
   const [selectedNote, setSelectedNote] = useState(''); // State for selected note to display in modal
 
-<<<<<<< HEAD
   useEffect(() => {
     fetchData();
   }, []);
-=======
-    const fetchData = async () => {
-        try {
-            const querySnapshot = await getDocs(query(collection(db, 'entries'), orderBy('timestamp', 'desc')));
-            const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    
-            // Update the state with the sorted data
-            setTableData(data);
-    
-            // Fetch confirmed status from Firestore
-            const confirmedData = {};
-            data.forEach(entry => {
-                confirmedData[entry.id] = entry.confirmed || false;
-            });
-            setConfirmedRows(confirmedData);
-        } catch (error) {
-            console.error('Error fetching data:', error);
-        }
-    };
-
-    // Function to handle input modal submission
-    const handleInputSubmit = async () => {
-        // Validate input
-        if (!selectedMonth || !selectedWeek || !selectedName || !steps || !scenario || isNaN(steps) || isNaN(scenario)) {
-            alert('Please fill in all fields correctly.');
-            return;
-        }
->>>>>>> main
 
   const fetchData = async () => {
     try {
@@ -98,6 +70,7 @@ const InputContent = () => {
       switch (name) {
         case 'Alin':
         case 'Cindy':
+        case 'Daniel':
         case 'Dimas':
         case 'Fajar':
         case 'Khusnul':

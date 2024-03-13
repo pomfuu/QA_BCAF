@@ -11,13 +11,13 @@ import robot6 from '../../public/Assets/robot_6.svg';
 import db from '../firebaseconfig.js';
 import { collection, getDocs, getDoc, doc } from '@firebase/firestore';
 
-const ChartsFebruari = () => {
+const ChartsJuni = () => {
     const [data, setData] = useState([]);
 
     useEffect(() => {
         const fetchDataFromFirestore = async () => {
             try {
-                const februarySummaryDocRef = doc(db, 'summary', 'February');
+                const februarySummaryDocRef = doc(db, 'summary', 'June');
                 const februarySummaryDocSnapshot = await getDoc(februarySummaryDocRef);
 
                 if (februarySummaryDocSnapshot.exists()) {
@@ -210,4 +210,4 @@ function renderBars(total, weekValue, color, role) {
     );
 }
 
-export default ChartsFebruari;
+export default ChartsJuni;

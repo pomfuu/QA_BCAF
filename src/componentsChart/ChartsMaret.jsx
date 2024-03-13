@@ -1,35 +1,60 @@
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import './Charts.css'
+import './Charts.css';
 import robot1 from '../../public/Assets/robot_1.svg';
 import robot2 from '../../public/Assets/robot_2.svg';
 import robot3 from '../../public/Assets/robot_3.svg';
 import robot4 from '../../public/Assets/robot_4.svg';
 import robot5 from '../../public/Assets/robot_5.svg';
 import robot6 from '../../public/Assets/robot_6.svg';
+import db from '../firebaseconfig.js';
+import { collection, getDocs, getDoc, doc } from '@firebase/firestore';
 
 const ChartsMaret = () => {
+    const [data, setData] = useState([]);
 
-    const [data] = useState([
-        {"name":"Alzre","week1Feb":"1583","week2Feb":"1900","week3Feb":"","week4Feb":"","week5Feb":"","totalFeb":"1583","persentaseFeb":"21","role":"manual"},
-        {"name":"Khusnul","week1Feb":"1682","week2Feb":"","week3Feb":"","week4Feb":"","week5Feb":"","totalFeb":"1682","persentaseFeb":"18","role":"auto"},
-        {"name":"Izza","week1Feb":"1552","week2Feb":"","week3Feb":"","week4Feb":"","week5Feb":"","totalFeb":"1552","persentaseFeb":"21","role":"manual"},
-        {"name":"Rania","week1Feb":"1456","week2Feb":"","week3Feb":"","week4Feb":"","week5Feb":"","totalFeb":"1456","persentaseFeb":"19","role":"manual"},
-        {"name":"Fajar","week1Feb":"2488","week2Feb":"","week3Feb":"","week4Feb":"","week5Feb":"","totalFeb":"2488","persentaseFeb":"26","role":"auto"},
-        {"name":"Yuda","week1Feb":"1452","week2Feb":"","week3Feb":"","week4Feb":"","week5Feb":"","totalFeb":"1452","persentaseFeb":"19","role":"manual"},
-        {"name":"Dimas","week1Feb":"1400","week2Feb":"","week3Feb":"","week4Feb":"","week5Feb":"","totalFeb":"1400","persentaseFeb":"15","role":"auto"},
-        {"name":"Gita","week1Feb":"","week2Feb":"","week3Feb":"","week4Feb":"","week5Feb":"","totalFeb":"","persentaseFeb":"0","role":"manual"},
-        {"name":"Alin","week1Feb":"1900","week2Feb":"","week3Feb":"","week4Feb":"","week5Feb":"","totalFeb":"1900","persentaseFeb":"20","role":"auto"},
-        {"name":"Cindy","week1Feb":"1900","week2Feb":"","week3Feb":"","week4Feb":"","week5Feb":"","totalFeb":"1900","persentaseFeb":"20","role":"auto"}
-    ]);
+    useEffect(() => {
+        const fetchDataFromFirestore = async () => {
+            try {
+                const februarySummaryDocRef = doc(db, 'summary', 'March');
+                const februarySummaryDocSnapshot = await getDoc(februarySummaryDocRef);
 
+                if (februarySummaryDocSnapshot.exists()) {
+                    const februarySummaryData = februarySummaryDocSnapshot.data();
+                    const newData = Object.keys(februarySummaryData.data).map(name => {
+                        const weeks = februarySummaryData.data[name].weeks;
+                        const weekSteps = {
+                            'Week 1': weeks['Week 1'] ? weeks['Week 1'].steps : 0,
+                            'Week 2': weeks['Week 2'] ? weeks['Week 2'].steps : 0,
+                            'Week 3': weeks['Week 3'] ? weeks['Week 3'].steps : 0,
+                            'Week 4': weeks['Week 4'] ? weeks['Week 4'].steps : 0,
+                            'Week 5': weeks['Week 5'] ? weeks['Week 5'].steps : 0,
+                        };
+                        return {
+                            name,
+                            week: weekSteps
+                        };
+                    });
+                    newData.sort((a, b) => a.name.localeCompare(b.name));
+                    setData(newData);
+                } else {
+                    console.error('Document for February does not exist in Firestore.');
+                }
+            } catch (error) {
+                console.error('Error fetching data from Firestore:', error);
+            }
+        };
+
+        fetchDataFromFirestore();
+    }, []);
+    
     const getRobotImage = (total, role) => {
-        let target = 6000;
+        let target = 7500;
         let robotImg = robot1;
 
         if (role === 'auto') {
-            target = 7200;
+            target = 9000;
         }
 
         const percentage = (total / target) * 100;
@@ -49,35 +74,59 @@ const ChartsMaret = () => {
         return robotImg;
     };
 
+    const goal = (role) => {
+        let goalVal = 7500;
+        if (role === 'auto') {
+            goalVal = 9000;
+        }
+        return goalVal;
+    }
+
     return (
         <div>
             <div className="row mt-4">
                 <div className="col-lg-6 ">
                 {data.slice(0, Math.ceil(data.length / 2))
-                    .filter(item => item.week1Feb !== null && item.week2Feb !== null && item.week3Feb !== null && item.week4Feb !== null && item.week5Feb !== null)
+                    .filter(item => item.week !== null || item.week2Feb !== null || item.week3Feb !== null || item.week4Feb !== null || item.week5Feb !== null)
                     .map((item, index) => {
-                        const formattedPercentage = Math.round(parseFloat(item.persentaseFeb));
+                        let week1 = item.week && item.week['Week 1'] ? item.week['Week 1'] : null;
+                        let week2 = item.week && item.week['Week 2'] ? item.week['Week 2'] : null;
+                        let week3 = item.week && item.week['Week 3'] ? item.week['Week 3'] : null;
+                        let week4 = item.week && item.week['Week 4'] ? item.week['Week 4'] : null;
+                        let week5 = item.week && item.week['Week 5'] ? item.week['Week 5'] : null;
+    
+                        const totalFeb = (
+                            (item.week && item.week['Week 1'] ? parseInt(item.week['Week 1']) : 0) +
+                            (item.week && item.week['Week 2'] ? parseInt(item.week['Week 2']) : 0) +
+                            (item.week && item.week['Week 3'] ? parseInt(item.week['Week 3']) : 0) +
+                            (item.week && item.week['Week 4'] ? parseInt(item.week['Week 4']) : 0) +
+                            (item.week && item.week['Week 5'] ? parseInt(item.week['Week 5']) : 0)
+                        );
+    
+                        const goalVal = goal(item.role)
+                        const persentase = (totalFeb/goalVal) * 100
+                        const formattedPercentage = Math.round(parseFloat(persentase));
                         return (
                             <div key={index} className="container-fluid align-items-center">
                                 <div className="col-12 mb-2 d-flex align-items-center">
                                     <div className="col-1 text-center">
-                                        <img style={{ height: '2.5vw' }} className='img-fluid' src={getRobotImage(item.totalFeb, item.role)} alt="robots" />
+                                        <img style={{ height: '2.5vw' }} className='img-fluid' src={getRobotImage(totalFeb, item.role)} alt="robots" />
                                         <div className='fw-semibold' style={{ fontSize:'0.9rem' }}>
                                             {item.name}
                                         </div>
                                     </div>
                                     <div className='col-10 me-2 text-start rounded-3 ' style={{ backgroundColor: '#D9D9D9', padding: '0.5vw' }}>
                                         <div className="row mx-2 d-flex" style={{ height: '1.7vw' }}>
-                                            {item.week1Feb !== "" && renderBars(item.totalFeb, item.week1Feb, '#F86161', item.role)}
-                                            {item.week2Feb !== "" && renderBars(item.totalFeb, item.week2Feb, '#FFA336', item.role)}
-                                            {item.week3Feb !== "" && renderBars(item.totalFeb, item.week3Feb, '#FFD542', item.role)}
-                                            {item.week4Feb !== "" && renderBars(item.totalFeb, item.week4Feb, '#84E44B', item.role)}
-                                            {item.week5Feb !== "" && renderBars(item.totalFeb, item.week5Feb, '#60CAC4', item.role)}
+                                            {week1 > 0 && renderBars(totalFeb, week1, '#F86161', item.role)}
+                                            {week2 > 0 && renderBars(totalFeb, week2, '#FFA336', item.role)}
+                                            {week3 > 0 && renderBars(totalFeb, week3, '#FFD542', item.role)}
+                                            {week4 > 0 && renderBars(totalFeb, week4, '#84E44B', item.role)}
+                                            {week5 > 0 && renderBars(totalFeb, week5, '#60CAC4', item.role)}
                                         </div>
                                     </div>
                                     <div className="col-2 fs-5">                 
                                         <div style={{ fontSize:'0.8rem' }}>
-                                            Total: <b>{item.totalFeb}</b>
+                                            Total: <b>{totalFeb}</b>
                                             <p className='fw-bold' style={{ color:'#CF3D3D' }}>{formattedPercentage}%</p>
                                         </div>
                                     </div>
@@ -89,30 +138,46 @@ const ChartsMaret = () => {
                 </div>
                 <div className="col-lg-6">
                 {data.slice(Math.ceil(data.length / 2))
-                    .filter(item => item.week1Feb !== null && item.week2Feb !== null && item.week3Feb !== null && item.week4Feb !== null && item.week5Feb !== null)
+                    .filter(item => item.week !== null || item.week2Feb !== null || item.week3Feb !== null || item.week4Feb !== null || item.week5Feb !== null)
                     .map((item, index) => {
-                        const formattedPercentage = Math.round(parseFloat(item.persentaseFeb));
+                        const week1 = item.week && item.week['Week 1'] ? item.week['Week 1'] : 0;
+                        let week2 = item.week && item.week['Week 2'] ? item.week['Week 2'] : null;
+                        let week3 = item.week && item.week['Week 3'] ? item.week['Week 3'] : null;
+                        let week4 = item.week && item.week['Week 4'] ? item.week['Week 4'] : null;
+                        let week5 = item.week && item.week['Week 5'] ? item.week['Week 5'] : null;
+    
+                        const totalFeb = (
+                            (item.week && item.week['Week 1'] ? parseInt(item.week['Week 1']) : 0) +
+                            (item.week && item.week['Week 2'] ? parseInt(item.week['Week 2']) : 0) +
+                            (item.week && item.week['Week 3'] ? parseInt(item.week['Week 3']) : 0) +
+                            (item.week && item.week['Week 4'] ? parseInt(item.week['Week 4']) : 0) +
+                            (item.week && item.week['Week 5'] ? parseInt(item.week['Week 5']) : 0)
+                        );
+    
+                        const goalVal = goal(item.role)
+                        const persentase = (totalFeb/goalVal) * 100
+                        const formattedPercentage = Math.round(parseFloat(persentase));
                         return (
                             <div key={index} className="container-fluid align-items-center">
                                 <div className="col-12 mb-2 d-flex align-items-center">
                                     <div className="col-1 text-center">
-                                        <img style={{ height: '2.5vw' }} className='img-fluid' src={getRobotImage(item.totalFeb, item.role)} alt="robots" />
+                                        <img style={{ height: '2.5vw' }} className='img-fluid' src={getRobotImage(totalFeb, item.role)} alt="robots" />
                                         <div className='fw-semibold' style={{ fontSize:'0.9rem' }}>
                                             {item.name}
                                         </div>
                                     </div>
                                     <div className='col-10 me-2 text-start rounded-3 ' style={{ backgroundColor: '#D9D9D9', padding: '0.5vw' }}>
                                         <div className="row mx-2 d-flex" style={{ height: '1.7vw' }}>
-                                            {item.week1Feb !== "" && renderBars(item.totalFeb, item.week1Feb, '#F86161', item.role)}
-                                            {item.week2Feb !== "" && renderBars(item.totalFeb, item.week2Feb, '#FFA336', item.role)}
-                                            {item.week3Feb !== "" && renderBars(item.totalFeb, item.week3Feb, '#FFD542', item.role)}
-                                            {item.week4Feb !== "" && renderBars(item.totalFeb, item.week4Feb, '#84E44B', item.role)}
-                                            {item.week5Feb !== "" && renderBars(item.totalFeb, item.week5Feb, '#60CAC4', item.role)}
+                                            {week1 > 0 && renderBars(totalFeb, week1, '#F86161', item.role)}
+                                            {week2 > 0 && renderBars(totalFeb, week2, '#FFA336', item.role)}
+                                            {week3 > 0 && renderBars(totalFeb, week3, '#FFD542', item.role)}
+                                            {week4 > 0 && renderBars(totalFeb, week4, '#84E44B', item.role)}
+                                            {week5 > 0 && renderBars(totalFeb, week5, '#60CAC4', item.role)}
                                         </div>
                                     </div>
                                     <div className="col-2 fs-5">                 
                                         <div style={{ fontSize:'0.8rem' }}>
-                                            Total: <b>{item.totalFeb}</b>
+                                            Total: <b>{totalFeb}</b>
                                             <p className='fw-bold' style={{ color:'#CF3D3D' }}>{formattedPercentage}%</p>
                                         </div>
                                     </div>
@@ -130,23 +195,19 @@ const ChartsMaret = () => {
 function renderBars(total, weekValue, color, role) {
     let goal = 7500;
     if (role === 'auto') {
-        goal = 9000;
+      goal = 9000;
     }
-
-    const percentage = Math.min((weekValue / goal) * 100, 100);
-    const barWidth = goal <= weekValue ? '100px' : `${percentage}%`;
-
-    const tooltipText = `Total: ${weekValue}`;
     
-    if (weekValue === null || weekValue === 0){
-        return null; 
-    } else {
-        return (
-            <div className="me-1 rounded-2 d-flex flex-column align-items-center justify-content-center" style={{ flex: '1', maxWidth: barWidth, backgroundColor: color, position: 'relative' }}>
-                <div className='text-center font2' style={{ fontSize:'0.9vw', lineHeight: '1.7vw', color:'#1e1e1e' }}>{weekValue}</div>
-            <div style={{ height: '100%' }}></div> </div>
-        );
-    }
+    const parsedWeekValue = parseInt(weekValue, 10);
+    const percentage = Math.min((parsedWeekValue / goal) * 100, 100);
+    const barWidth = goal <= parsedWeekValue ? '100px' : `${percentage}%`;
+    
+    return (
+      <div className="me-1 rounded-2 d-flex flex-column align-items-center justify-content-center" style={{ flex: '1', maxWidth: barWidth, backgroundColor: color, position: 'relative' }}>
+        <div className='text-center font2' style={{ fontSize:'0.9vw', lineHeight: '1.7vw', color:'#1e1e1e' }}>{parsedWeekValue}</div>
+        <div style={{ height: '100%' }}></div>
+      </div>
+    );
 }
 
 export default ChartsMaret;

@@ -5,9 +5,30 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import ChartsFebruari from './componentsChart/ChartsFebruari';
 import ChartsMaret from './componentsChart/ChartsMaret';
 import "./main.css"
-import ContentRight from './Gallery/ContentRight';
 import { Image } from 'react-bootstrap';
 import star from '../public/Assets/star.svg';
+import ContentRightFeb from './Gallery/ContentRightFeb';
+import ChartsApril from './componentsChart/ChartsApril';
+import ChartsMei from './componentsChart/ChartsMei';
+import ChartsJuni from './componentsChart/ChartsJuni';
+import ChartsJuly from './componentsChart/ChartsJuly';
+import ChartsAgustus from './componentsChart/ChartsAgustus';
+import ChartsSeptember from './componentsChart/ChartsSeptember';
+import ChartsOktober from './componentsChart/ChartsOktober';
+import ChartsNovember from './componentsChart/ChartsNovember';
+import ChartsDesember from './componentsChart/ChartsDesember';
+import ChartsJanuari from './componentsChart/ChartsJanuari';
+import ContentRightJan from './Gallery/ContentRightJan';
+import ContentRightMar from './Gallery/ContentRightMar';
+import ContentRightApr from './Gallery/ContentRightApr';
+import ContentRightMei from './Gallery/ContentRightMei';
+import ContentRightJun from './Gallery/ContentRightJun';
+import ContentRightJul from './Gallery/ContentRightJul';
+import ContentRightAgs from './Gallery/ContentRightAgs';
+import ContentRightSep from './Gallery/ContentRightSep';
+import ContentRightOct from './Gallery/ContentRightOct';
+import ContentRightNov from './Gallery/ContentRightNov';
+import ContentRightDes from './Gallery/ContentRightDes';
 
 const ChartsAll = () => {
     const [selectedMonth, setSelectedMonth] = useState('');
@@ -48,11 +69,32 @@ const ChartsAll = () => {
         </div>
         <div className="row container-fluid">
             <div className="col-12">
-                {selectedMonth === 'February' && <ChartsFebruari />}
+                {selectedMonth === 'January' && <ChartsJanuari />}
                 {selectedMonth === 'March' && <ChartsMaret />}
+                {selectedMonth === 'April' && <ChartsApril />}
+                {selectedMonth === 'May' && <ChartsMei />}
+                {selectedMonth === 'June' && <ChartsJuni />}
+                {selectedMonth === 'July' && <ChartsJuly />}
+                {selectedMonth === 'August' && <ChartsAgustus />}
+                {selectedMonth === 'September' && <ChartsSeptember />}
+                {selectedMonth === 'February' && <ChartsFebruari />}
+                {selectedMonth === 'October' && <ChartsOktober />}
+                {selectedMonth === 'November' && <ChartsNovember />}
+                {selectedMonth === 'December' && <ChartsDesember />}
             </div>
             <div className="col-12">
-                <ContentRight selectedMonth={selectedMonth} />
+                {selectedMonth === 'January' && <ContentRightJan />}
+                {selectedMonth === 'March' && <ContentRightMar />}
+                {selectedMonth === 'April' && <ContentRightApr />}
+                {selectedMonth === 'May' && <ContentRightMei />}
+                {selectedMonth === 'June' && <ContentRightJun />}
+                {selectedMonth === 'July' && <ContentRightJul />}
+                {selectedMonth === 'August' && <ContentRightAgs />}
+                {selectedMonth === 'September' && <ContentRightSep />}
+                {selectedMonth === 'February' && <ContentRightFeb />}
+                {selectedMonth === 'October' && <ContentRightOct />}
+                {selectedMonth === 'November' && <ContentRightNov />}
+                {selectedMonth === 'December' && <ContentRightDes />}
             </div>
         </div>
     </div>
