@@ -63,11 +63,11 @@ const ChartsFebruari = () => {
     }, []);
     
     const getRobotImage = (total, role) => {
-        let target = 7500;
+        let target = 6000;
         let robotImg = robot1;
 
         if (role === 'auto') {
-            target = 9000;
+            target = 7200;
         }
 
         const percentage = (total / target) * 100;
