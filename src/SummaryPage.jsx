@@ -204,7 +204,7 @@ const SummaryPage = () => {
           <Modal.Title>Notes</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <pre>{selectedCellNotes}</pre>
+          <pre style={{ whiteSpace: 'pre-wrap' }}>{selectedCellNotes}</pre>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleCloseModal}>
