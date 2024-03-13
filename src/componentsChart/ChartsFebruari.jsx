@@ -75,9 +75,9 @@ const ChartsFebruari = () => {
     };
 
     const goal = (role) => {
-        let goalVal = 7500;
+        let goalVal = 6000;
         if (role === 'auto') {
-            goalVal = 9000;
+            goalVal = 7500;
         }
         return goalVal;
     }
