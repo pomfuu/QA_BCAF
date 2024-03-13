@@ -208,6 +208,29 @@ const InputContent = () => {
     setSelectedNote('');
   };
 
+  const [filterMonth, setFilterMonth] = useState('');
+
+  // Function to handle filtering by month
+  const handleFilterByMonth = async () => {
+    try {
+      let querySnapshot;
+      if (filterMonth !== '') {
+        querySnapshot = await getDocs(query(collection(db, 'entries'), where('month', '==', filterMonth), orderBy('timestamp', 'desc')));
+      } else {
+        querySnapshot = await getDocs(query(collection(db, 'entries'), orderBy('timestamp', 'desc')));
+      }
+  
+      const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setTableData(data);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+  // Call handleFilterByMonth whenever filterMonth changes
+  useEffect(() => {
+    handleFilterByMonth();
+  }, [filterMonth]);
+
   return (
     <div>
       <div className='align-items-center' style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
@@ -236,7 +259,7 @@ const InputContent = () => {
           Add Entry
         </button>
 
-        <Link  className='font2 btn text-end fs-5' style={{ marginLeft: 'auto', color: '#83EC44'}} to={'/summary'}>Go to Summary Page</Link>
+        <Link className='font2 btn text-end fs-5' style={{ marginLeft: 'auto', color: '#83EC44' }} to={'/summary'}>Go to Summary Page</Link>
       </div>
 
 
@@ -323,6 +346,16 @@ const InputContent = () => {
         </Modal.Footer>
       </Modal>
 
+      <div className='col-2 mb-2'>
+        <label className='font2'>Filter by Month:</label>
+        <select className="form-select" value={filterMonth} onChange={e => setFilterMonth(e.target.value)}>
+          <option value="">All Months</option>
+          {months.map((month, index) => (
+            <option key={index} value={month}>{month}</option>
+          ))}
+        </select>
+      </div>
+      
       {/* Table */}
       <Table striped bordered>
         <thead>
@@ -337,45 +370,47 @@ const InputContent = () => {
           </tr>
         </thead>
         <tbody>
-          {/* {tableData.map((entry, index) => ( */}
-          {getCurrentItems().map((entry, index) => (
-            <tr key={entry.id} className='align-middle text-center' style={{ height: '50px' }}>
-              <td>{entry.name}</td>
-              <td>{entry.month}</td>
-              <td>{entry.week}</td>
-              <td>{entry.steps}</td>
-              <td>{entry.scenario}</td>
-              <td>
-                <button className="btn btn-link" onClick={() => handleNoteClick(entry.notes)}>
-                  <FaRegNoteSticky style={{ color: '#1E1E1E' }} />
-                </button>
-              </td>
-              <td>
-                {!confirmedRows[entry.id] && (
-                  <>
-                    <button className="edit-button" onClick={() => handleEdit(entry.id)}>
-                      <FaEdit className='svg-container' style={{ color: '#EEEDE6' }} />
-                      <span>Edit</span>
-                    </button>
+  {getCurrentItems()
+    .filter(entry => filterMonth === '' || entry.month === filterMonth) // Apply filter by month
+    .map((entry, index) => (
+    <tr key={entry.id} className='align-middle text-center' style={{ height: '50px' }}>
+      <td>{entry.name}</td>
+      <td>{entry.month}</td>
+      <td>{entry.week}</td>
+      <td>{entry.steps}</td>
+      <td>{entry.scenario}</td>
+      <td>
+        <button className="btn btn-link" onClick={() => handleNoteClick(entry.notes)}>
+          <FaRegNoteSticky style={{ color: '#1E1E1E' }} />
+        </button>
+      </td>
+      <td>
+        {!confirmedRows[entry.id] && (
+          <>
+            <button className="edit-button" onClick={() => handleEdit(entry.id)}>
+              <FaEdit className='svg-container' style={{ color: '#EEEDE6' }} />
+              <span>Edit</span>
+            </button>
 
-                    <button className="delete-button" onClick={() => handleDelete(entry.id)}>
-                      <FaDeleteLeft className='svg-container' style={{ color: '#EEEDE6' }} />
-                      <span>Remove</span>
-                    </button>
+            <button className="delete-button" onClick={() => handleDelete(entry.id)}>
+              <FaDeleteLeft className='svg-container' style={{ color: '#EEEDE6' }} />
+              <span>Remove</span>
+            </button>
 
-                    <button className="confirm-button" onClick={() => handleConfirmEntry(entry.id)}>
-                      <FaCheckSquare className='svg-container' style={{ color: '#EEEDE6' }} />
-                      <span>Confirm</span>
-                    </button>
-                  </>
-                )}
-                {confirmedRows[entry.id] && (
-                  <FaCheck style={{ color: '#4CBE08' }} />
-                )}
-              </td>
-            </tr>
-          ))}
-        </tbody>
+            <button className="confirm-button" onClick={() => handleConfirmEntry(entry.id)}>
+              <FaCheckSquare className='svg-container' style={{ color: '#EEEDE6' }} />
+              <span>Confirm</span>
+            </button>
+          </>
+        )}
+        {confirmedRows[entry.id] && (
+          <FaCheck style={{ color: '#4CBE08' }} />
+        )}
+      </td>
+    </tr>
+  ))}
+</tbody>
+
       </Table>
 
       {/* Pagination */}
