@@ -10,10 +10,8 @@ import { FaEdit } from "react-icons/fa";
 import { FaDeleteLeft } from "react-icons/fa6";
 import { FaCheckSquare } from "react-icons/fa";
 import { FaRegNoteSticky } from "react-icons/fa6";
-
-
-
-import './main.css'
+import './main.css';
+import { Pagination } from 'react-bootstrap';
 
 const InputContent = () => {
   const weeks = ["Week 1", "Week 2", "Week 3", "Week 4", "Week 5"];
@@ -34,6 +32,19 @@ const InputContent = () => {
   const [deleteId, setDeleteId] = useState(null);
   const [confirmedRows, setConfirmedRows] = useState({}); // Store confirmation status for each row
   const [selectedNote, setSelectedNote] = useState(''); // State for selected note to display in modal
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
+
+  const getCurrentItems = () => {
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    return tableData.slice(indexOfFirstItem, indexOfLastItem);
+  };
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
 
   useEffect(() => {
     fetchData();
@@ -268,7 +279,7 @@ const InputContent = () => {
           <Button variant="secondary" onClick={handleCancelSubmit}>
             Close
           </Button>
-          <Button style={{backgroundColor: '#4CBE08'}} onClick={handleInputSubmit}>
+          <Button style={{ backgroundColor: '#4CBE08' }} onClick={handleInputSubmit}>
             Submit
           </Button>
         </Modal.Footer>
@@ -308,18 +319,19 @@ const InputContent = () => {
       {/* Table */}
       <Table striped bordered>
         <thead>
-          <tr className="align-middle text-center" style={{ height: '50px' }}>
-            <th className="custom-table-header" style={{ width: '20%' }}>Name</th>
-            <th className="custom-table-header" style={{ width: '10%' }}>Month</th>
-            <th className="custom-table-header" style={{ width: '10%' }}>Week</th>
-            <th className="custom-table-header" style={{ width: '10%' }}>Steps</th>
-            <th className="custom-table-header" style={{ width: '10%' }}>Scenario</th>
-            <th className="custom-table-header" style={{ width: '10%' }}>Notes</th>
-            <th className="custom-table-header" style={{ width: '30%' }}>Action</th>
+          <tr className="align-middle text-center">
+            <th className="custom-table-header">Name</th>
+            <th className="custom-table-header">Month</th>
+            <th className="custom-table-header">Week</th>
+            <th className="custom-table-header">Steps</th>
+            <th className="custom-table-header">Scenario</th>
+            <th className="custom-table-header">Notes</th>
+            <th className="custom-table-header">Action</th>
           </tr>
         </thead>
         <tbody>
-          {tableData.map((entry, index) => (
+          {/* {tableData.map((entry, index) => ( */}
+          {getCurrentItems().map((entry, index) => (
             <tr key={entry.id} className='align-middle text-center' style={{ height: '50px' }}>
               <td>{entry.name}</td>
               <td>{entry.month}</td>
@@ -328,8 +340,8 @@ const InputContent = () => {
               <td>{entry.scenario}</td>
               <td>
                 <button className="btn btn-link" onClick={() => handleNoteClick(entry.notes)}>
-                  <FaRegNoteSticky style={{color: '#1E1E1E'}}/>
-                  </button>
+                  <FaRegNoteSticky style={{ color: '#1E1E1E' }} />
+                </button>
               </td>
               <td>
                 {!confirmedRows[entry.id] && (
@@ -345,7 +357,7 @@ const InputContent = () => {
                     </button>
 
                     <button className="confirm-button" onClick={() => handleConfirmEntry(entry.id)}>
-                      <FaCheckSquare className='svg-container'style={{ color: '#EEEDE6' }} />
+                      <FaCheckSquare className='svg-container' style={{ color: '#EEEDE6' }} />
                       <span>Confirm</span>
                     </button>
                   </>
@@ -358,6 +370,27 @@ const InputContent = () => {
           ))}
         </tbody>
       </Table>
+
+      {/* Pagination */}
+      <div style={{ textAlign: 'center' }}>
+        <Pagination className='custom-pagination'>
+          {currentPage > 1 && (
+            <Pagination.Prev onClick={() => handlePageChange(currentPage - 1)} />
+          )}
+          {Array.from({ length: Math.ceil(tableData.length / itemsPerPage) }, (_, index) => (
+            <Pagination.Item
+              key={index}
+              active={index + 1 === currentPage}
+              onClick={() => handlePageChange(index + 1)}
+            >
+              {index + 1}
+            </Pagination.Item>
+          ))}
+          {currentPage < Math.ceil(tableData.length / itemsPerPage) && (
+            <Pagination.Next onClick={() => handlePageChange(currentPage + 1)} />
+          )}
+        </Pagination>
+      </div>
 
     </div>
   );

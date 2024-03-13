@@ -47,16 +47,34 @@ const SummaryPage = () => {
       // Update state with summary data
       setSummaryData(summaryData);
 
+      const getWeeksInMonth = (year, month) => {
+        const firstDay = new Date(year, month, 1);
+        const lastDay = new Date(year, month + 1, 0);
+        const daysInMonth = lastDay.getDate() - firstDay.getDate() + 1;
+        return Math.ceil(daysInMonth / 7);
+    }
+
+    const getMonthNumber = (monthName) => {
+      const months = {
+          January: 0, February: 1, March: 2, April: 3, May: 4, June: 5,
+          July: 6, August: 7, September: 8, October: 9, November: 10, December: 11
+      };
+      return months[monthName];
+  }
+
       // Calculate monthly target, steps debt, and average percent for each person
       const target = {};
       const debt = {};
       const percent = {};
       for (const month in summaryData) {
         for (const name in summaryData[month]) {
+          const monthNumber = getMonthNumber(month);
+          const weeksInCurrentMonth = getWeeksInMonth(2024, monthNumber);
           const steps = summaryData[month][name].totalSteps;
           const weeks = Object.keys(summaryData[month][name].weeks).length;
           const role = getRole(name); // Get role using the getRole function
-          target[name] = role === 'auto' ? 1800 * weeks : 1500 * weeks;
+          //////////////////////////////////////////////////////////////////////////////
+          target[name] = role === 'auto' ? 1800 * weeksInCurrentMonth : 1500 * weeksInCurrentMonth;
           debt[name] = target[name] - steps;
           percent[name] = (steps / target[name]) * 100;
         }
@@ -106,6 +124,7 @@ const SummaryPage = () => {
       case 'Dimas':
       case 'Fajar':
       case 'Khusnul':
+      case 'Daniel':
         return 'auto';
       case 'Alzre':
       case 'Gita':
@@ -167,7 +186,7 @@ const SummaryPage = () => {
                     const role = getRole(name);
                     const target = role === 'auto' ? 1800 : 1500;
                     const backgroundColor = steps < target ? '#CF3D3D' : '#83EC44';
-                    return <td key={week} onClick={() => handleCellClick(name, week)} style={{ backgroundColor }}>{steps}</td>;
+                    return <td key={week} onClick={() => handleCellClick(name, week)} style={{ backgroundColor, cursor: 'pointer'}}>{steps}</td>;
                   })}
                   <td style={{backgroundColor: '#DAD6CA'}}>{data.totalSteps || 0}</td>
                   <td style={{backgroundColor: '#DAD6CA'}}>{monthlyTarget[name] || 0}</td>
