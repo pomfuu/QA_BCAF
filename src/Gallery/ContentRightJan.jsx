@@ -117,7 +117,7 @@ const ContentRightJan = ({ selectedMonth }) => {
                     <input type="file" ref={fileInputRef} style={{ display: 'none' }} accept="image/*" onChange={handleFileUpload} />
                 </div>
                 <div className="col-lg-5">
-                    <div style={{ backgroundColor: '#00BDB2' }} className="text-white font2 rounded-2 px-4 py-1">AUGUST ACHIEVEMENTS</div>
+                    <div style={{ backgroundColor: '#00BDB2' }} className="text-white font2 rounded-2 px-4 py-1">JANUARY ACHIEVEMENTS</div>
                     <div className='mt-2'>
                         <Table size='sm' hover>
                             <thead className='text-center'>
