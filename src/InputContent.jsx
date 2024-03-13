@@ -12,6 +12,7 @@ import { FaCheckSquare } from "react-icons/fa";
 import { FaRegNoteSticky } from "react-icons/fa6";
 import './main.css';
 import { Pagination } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 
 const InputContent = () => {
   const weeks = ["Week 1", "Week 2", "Week 3", "Week 4", "Week 5"];
@@ -210,30 +211,36 @@ const InputContent = () => {
 
   return (
     <div>
-      <button
-        style={{
-          width: '165px',
-          height: '40px',
-          backgroundColor: '#83EC44',
-          color: '#EEEDE6',
-          border: 'none',
-          cursor: 'pointer',
-          borderRadius: '5px',
-          transition: 'background-color 0.3s, color 0.3s',
-          marginBottom: '20px',
-        }}
-        className='font2'
-        onMouseEnter={(e) => {
-          e.target.style.backgroundColor = '#DAD6CA';
-          e.target.style.color = '#1E1E1E';
-        }}
-        onMouseLeave={(e) => {
-          e.target.style.backgroundColor = '#83EC44';
-          e.target.style.color = '#EEEDE6';
-        }}
-        onClick={() => setShowModal(true)}>
-        Add Entry
-      </button>
+      <div className='align-items-center' style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+        <button
+          style={{
+            width: '165px',
+            height: '40px',
+            backgroundColor: '#83EC44',
+            color: '#EEEDE6',
+            border: 'none',
+            cursor: 'pointer',
+            borderRadius: '5px',
+            transition: 'background-color 0.3s, color 0.3s',
+          }}
+          className='font2'
+          onMouseEnter={(e) => {
+            e.target.style.backgroundColor = '#DAD6CA';
+            e.target.style.color = '#1E1E1E';
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.backgroundColor = '#83EC44';
+            e.target.style.color = '#EEEDE6';
+          }}
+          onClick={() => setShowModal(true)}
+        >
+          Add Entry
+        </button>
+
+        <Link  className='font2 btn text-end fs-5' style={{ marginLeft: 'auto', color: '#83EC44'}} to={'/summary'}>Go to Summary Page</Link>
+      </div>
+
+
 
       {/* Input Modal */}
       <Modal show={showModal} onHide={() => setShowModal(false)}>
