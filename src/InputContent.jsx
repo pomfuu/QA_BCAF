@@ -86,7 +86,6 @@ const InputContent = () => {
         case 'Dimas':
         case 'Fajar':
         case 'Khusnul':
-        case 'Daniel':
           return 'auto';
         case 'Alzre':
         case 'Gita':

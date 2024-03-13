@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from 'react';
 import { collection, getDocs, doc, setDoc } from 'firebase/firestore';
 import db from './firebaseconfig';
@@ -119,10 +120,10 @@ const SummaryPage = () => {
     switch (name) {
       case 'Alin':
       case 'Cindy':
+      case 'Daniel':
       case 'Dimas':
       case 'Fajar':
       case 'Khusnul':
-      case 'Daniel':
         return 'auto';
       case 'Alzre':
       case 'Gita':

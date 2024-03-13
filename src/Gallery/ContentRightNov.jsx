@@ -1,17 +1,46 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
 import React, { useRef, useState, useEffect } from 'react';
 import { Table } from 'react-bootstrap';
 import PropTypes from 'prop-types';
+import { doc, updateDoc, getDoc, setDoc } from 'firebase/firestore';
+import db from '../firebaseconfig.js';
 
-const ContentRight = ({ selectedMonth }) => {
+const ContentRightNov = ({ selectedMonth }) => {
     const fileInputRef = useRef(null);
     const [uploadedImages, setUploadedImages] = useState([]);
+    const [weekData, setWeekData] = useState({
+        week1: '',
+        week2: '',
+        week3: '',
+        week4: '',
+        week5: ''
+    });
 
     useEffect(() => {
         const storedImages = localStorage.getItem(`uploadedImages_${selectedMonth}`);
         if (storedImages) {
             setUploadedImages(JSON.parse(storedImages));
         }
+    }, [selectedMonth]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const docRef = doc(db, 'weeksData', selectedMonth);
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    setWeekData(data);
+                } else {
+                    await setDoc(docRef, weekData);
+                    console.log('Initial week data saved successfully.');
+                }
+            } catch (error) {
+                console.error('Error fetching week data:', error);
+            }
+        };
+        fetchData();
     }, [selectedMonth]);
 
     const handleFileUpload = (event) => {
@@ -47,7 +76,19 @@ const ContentRight = ({ selectedMonth }) => {
         }
     };
 
-    ContentRight.propTypes = {
+    const handleWeekDataChange = async (week, value) => {
+        try {
+            const updatedData = { ...weekData, [week]: value };
+            setWeekData(updatedData);
+            const docRef = doc(db, 'weeksData', selectedMonth);
+            await updateDoc(docRef, updatedData);
+            console.log('Week data saved successfully.');
+        } catch (error) {
+            console.error('Error updating week data:', error);
+        }
+    };
+
+    ContentRightNov.propTypes = {
         selectedMonth: PropTypes.string.isRequired, 
     };
 
@@ -76,7 +117,7 @@ const ContentRight = ({ selectedMonth }) => {
                     <input type="file" ref={fileInputRef} style={{ display: 'none' }} accept="image/*" onChange={handleFileUpload} />
                 </div>
                 <div className="col-lg-5">
-                    <div style={{ backgroundColor: '#00BDB2' }} className="text-white font2 rounded-2 px-4 py-1">{selectedMonth} ACHIEVEMENTS</div>
+                    <div style={{ backgroundColor: '#00BDB2' }} className="text-white font2 rounded-2 px-4 py-1">NOVEMBER ACHIEVEMENTS</div>
                     <div className='mt-2'>
                         <Table size='sm' hover>
                             <thead className='text-center'>
@@ -90,11 +131,11 @@ const ContentRight = ({ selectedMonth }) => {
                             </thead>
                             <tbody className='text-center'>
                                 <tr>
-                                    <td>70%</td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
+                                    <td contentEditable onBlur={(e) => handleWeekDataChange('week1', e.target.innerText)}>{weekData.week1}</td>
+                                    <td contentEditable onBlur={(e) => handleWeekDataChange('week2', e.target.innerText)}>{weekData.week2}</td>
+                                    <td contentEditable onBlur={(e) => handleWeekDataChange('week3', e.target.innerText)}>{weekData.week3}</td>
+                                    <td contentEditable onBlur={(e) => handleWeekDataChange('week4', e.target.innerText)}>{weekData.week4}</td>
+                                    <td contentEditable onBlur={(e) => handleWeekDataChange('week5', e.target.innerText)}>{weekData.week5}</td>
                                 </tr>
                             </tbody>
                         </Table>
@@ -110,8 +151,7 @@ const ContentRight = ({ selectedMonth }) => {
                             LEAD
                         </div>
                         <div style={{ color:'#1e1e1e' }} className="col-9 mt-1">
-                            QA Automation : <b>1800 / Week</b> or <b>7200 / Month</b> <br />
-                            QA Manual : <b>1500 / Week</b> or <b>1500 / Week</b>
+                            Automation: <b>1800/Week</b> or <b>7200/Month</b> | Manual: <b>1500/Week</b> or <b>6000/Month</b>
                         </div>
                     </div>
                 </div>
@@ -120,4 +160,4 @@ const ContentRight = ({ selectedMonth }) => {
     );
 }
 
-export default ContentRight;
+export default ContentRightNov;
