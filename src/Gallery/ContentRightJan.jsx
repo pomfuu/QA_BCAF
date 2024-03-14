@@ -43,6 +43,14 @@ const ContentRightJan = ({ selectedMonth }) => {
         fetchData();
     }, [selectedMonth]);
 
+    useEffect(() => {
+        // Retrieve week data from localStorage when component mounts
+        const storedWeekData = localStorage.getItem(`weekData_${selectedMonth}`);
+        if (storedWeekData) {
+            setWeekData(JSON.parse(storedWeekData));
+        }
+    }, [selectedMonth]);
+
     const handleFileUpload = (event) => {
         const file = event.target.files[0];
         if (file && uploadedImages.length < 5) {
@@ -80,6 +88,7 @@ const ContentRightJan = ({ selectedMonth }) => {
         try {
             const updatedData = { ...weekData, [week]: value };
             setWeekData(updatedData);
+            localStorage.setItem(`weekData_${selectedMonth}`, JSON.stringify(updatedData)); // Store updated week data in localStorage
             const docRef = doc(db, 'weeksData', selectedMonth);
             await updateDoc(docRef, updatedData);
             console.log('Week data saved successfully.');
@@ -89,7 +98,7 @@ const ContentRightJan = ({ selectedMonth }) => {
     };
 
     ContentRightJan.propTypes = {
-        selectedMonth: PropTypes.string.isRequired, 
+        selectedMonth: PropTypes.string.isRequired,
     };
 
     return (
@@ -122,12 +131,12 @@ const ContentRightJan = ({ selectedMonth }) => {
                         <Table size='sm' hover>
                             <thead className='text-center'>
                                 <tr>
-                                    <th className='text-white' style={{ backgroundColor:'#F86161' }}>Week 1</th>
-                                    <th className='text-white' style={{ backgroundColor:'#FFA336' }}>Week 2</th>
-                                    <th className='text-white' style={{ backgroundColor:'#FFD542' }}>Week 3</th>
-                                    <th className='text-white' style={{ backgroundColor:'#84E44B' }}>Week 4</th>
-                                    <th className='text-white' style={{ backgroundColor:'#26D2C7' }}>Week 5</th>
-                                    <th className='text-white' style={{ backgroundColor:'#1e1e1e' }}>Total</th>
+                                    <th className='text-white' style={{ backgroundColor: '#F86161' }}>Week 1</th>
+                                    <th className='text-white' style={{ backgroundColor: '#FFA336' }}>Week 2</th>
+                                    <th className='text-white' style={{ backgroundColor: '#FFD542' }}>Week 3</th>
+                                    <th className='text-white' style={{ backgroundColor: '#84E44B' }}>Week 4</th>
+                                    <th className='text-white' style={{ backgroundColor: '#26D2C7' }}>Week 5</th>
+                                    <th className='text-white' style={{ backgroundColor: '#1e1e1e' }}>Total</th>
                                 </tr>
                             </thead>
                             <tbody className='text-center'>
@@ -142,24 +151,10 @@ const ContentRightJan = ({ selectedMonth }) => {
                             </tbody>
                         </Table>
                     </div>
-                    <div className="row align-items-top" style={{ fontSize:'0.8rem', marginTop:'-0.7vw' }}>
-                        <div style={{ color:'#1e1e1e' }} className="col-3 fw-bold">
-                            WIG
-                        </div>
-                        <div className="col-9">
-                            pencapaian SLA penyelesaian project dari 75% ke 90%
-                        </div>
-                        <div className="col-3 fw-bold mt-1">
-                            LEAD
-                        </div>
-                        <div style={{ color:'#1e1e1e' }} className="col-9 mt-1">
-                            QA Automation: <b>1800/Week</b> or <b>7200/Month</b> <br /> QA Manual: <b>1500/Week</b> or <b>6000/Month</b>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
     );
-}
+};
 
 export default ContentRightJan;
