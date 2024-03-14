@@ -7,7 +7,10 @@ import db from '../firebaseconfig.js';
 
 const ContentRightMar = ({ selectedMonth }) => {
     const fileInputRef = useRef(null);
-    const [uploadedImages, setUploadedImages] = useState([]);
+    const [uploadedImages, setUploadedImages] = useState(() => {
+        const storedImages = localStorage.getItem(`uploadedImages_${selectedMonth}`);
+        return storedImages ? JSON.parse(storedImages) : [];
+    });
     const [weekData, setWeekData] = useState({
         week1: '',
         week2: '',
@@ -25,6 +28,7 @@ const ContentRightMar = ({ selectedMonth }) => {
                 if (docSnap.exists()) {
                     const data = docSnap.data();
                     setWeekData(data);
+                    setUploadedImages(data.uploadedImages || []);
                 } else {
                     await setDoc(docRef, weekData);
                     console.log('Initial week data saved successfully.');
@@ -38,7 +42,7 @@ const ContentRightMar = ({ selectedMonth }) => {
 
     const handleFileUpload = (event) => {
         const file = event.target.files[0];
-        if (file && uploadedImages.length < 5) {
+        if (file) {
             const reader = new FileReader();
             reader.onload = () => {
                 const newImages = [...uploadedImages, reader.result];
@@ -46,6 +50,16 @@ const ContentRightMar = ({ selectedMonth }) => {
                 localStorage.setItem(`uploadedImages_${selectedMonth}`, JSON.stringify(newImages));
             };
             reader.readAsDataURL(file);
+        }
+    };
+
+    const updateFirestoreImages = async (images) => {
+        try {
+            const docRef = doc(db, selectedMonth, 'weeksData');
+            await updateDoc(docRef, { uploadedImages: images });
+            console.log('Images updated in Firestore.');
+        } catch (error) {
+            console.error('Error updating images in Firestore:', error);
         }
     };
 
@@ -73,13 +87,6 @@ const ContentRightMar = ({ selectedMonth }) => {
         try {
             const updatedData = { ...weekData, [week]: value };
             setWeekData(updatedData); 
-            const weekDataCollectionRef = collection(db, 'weekDataCollection');
-            await addDoc(weekDataCollectionRef, {
-                week,
-                value,
-                timestamp: new Date(),
-                month: selectedMonth
-            });
             const docRef = doc(db, selectedMonth, 'weeksData');
             await updateDoc(docRef, updatedData);
             console.log('Week data saved successfully.');
@@ -93,7 +100,8 @@ const ContentRightMar = ({ selectedMonth }) => {
             console.log('Saving changes for month:', selectedMonth);
             const docRef = doc(db, selectedMonth, 'weeksData');
             await updateDoc(docRef, weekData);
-            console.log('Week data saved successfully.');
+            updateFirestoreImages(uploadedImages); // Update images
+            console.log('Week data and images saved successfully.');
         } catch (error) {
             console.error('Error updating week data:', error);
         }
@@ -106,7 +114,7 @@ const ContentRightMar = ({ selectedMonth }) => {
     return (
         <div className='container-fluid'>
             <div className="row">
-                <div className="col-lg-7 col-12">
+                <div className="col-lg-7 col-12 align-items-center">
                     <div style={{ backgroundColor: '#00BDB2' }} className="text-white font2 rounded-2 px-4 py-1">THIS MONTH GALLERY</div>
                     <div className="lightbox">
                         <div className="row mt-2">
@@ -123,8 +131,9 @@ const ContentRightMar = ({ selectedMonth }) => {
                         </div>
                     </div>
                     {uploadedImages.length < 5 && (
-                        <div className="btn rounded-2 text-white font2 mb-2" style={{ backgroundColor: '#F86161' }} onClick={() => fileInputRef.current.click()}>Add Image</div>
+                        <div className="btn rounded-2 text-white font2 me-1" style={{ backgroundColor: '#F86161' }} onClick={() => fileInputRef.current.click()}>Add Image</div>
                     )}
+                    <Button className='border-0 font2 px-4' style={{ backgroundColor:'#00BDB2' }} onClick={handleSaveChanges}>Save</Button>
                     <input type="file" ref={fileInputRef} style={{ display: 'none' }} accept="image/*" onChange={handleFileUpload} />
                 </div>
                 <div className="col-lg-5">

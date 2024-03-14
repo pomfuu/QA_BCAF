@@ -87,11 +87,16 @@ const ChartsJanuari = () => {
         return robotImg;
     };
 
-    const goal = (role) => {
+    const goal = (name, role) => {
         let goalVal = 6600;
+        if (name === 'Gita') {
+            goalVal = 250;
+        }
         if (role === 'auto') {
             goalVal = 7920;
         }
+
+        
         return goalVal;
     }
 
@@ -116,7 +121,7 @@ const ChartsJanuari = () => {
                             (item.week && item.week['Week 5'] ? parseInt(item.week['Week 5']) : 0)
                         );
     
-                        const goalVal = goal(item.role)
+                        const goalVal = goal(item.name, item.role);
                         const persentase = (totalFeb/goalVal) * 100
                         const formattedPercentage = Math.round(parseFloat(persentase));
                         return (
@@ -130,11 +135,11 @@ const ChartsJanuari = () => {
                                     </div>
                                     <div className='col-10 me-2 text-start rounded-3 ' style={{ backgroundColor: '#D9D9D9', padding: '0.5vw' }}>
                                         <div className="row mx-2 d-flex" style={{ height: '1.7vw' }}>
-                                            {week1 > 0 && renderBars(totalFeb, week1, '#F86161', item.role)}
-                                            {week2 > 0 && renderBars(totalFeb, week2, '#FFA336', item.role)}
-                                            {week3 > 0 && renderBars(totalFeb, week3, '#FFD542', item.role)}
-                                            {week4 > 0 && renderBars(totalFeb, week4, '#84E44B', item.role)}
-                                            {week5 > 0 && renderBars(totalFeb, week5, '#60CAC4', item.role)}
+                                            {week1 > 0 && renderBars(totalFeb, week1, '#F86161', item.role, item.name)}
+                                            {week2 > 0 && renderBars(totalFeb, week2, '#FFA336', item.role, item.name)}
+                                            {week3 > 0 && renderBars(totalFeb, week3, '#FFD542', item.role, item.name)}
+                                            {week4 > 0 && renderBars(totalFeb, week4, '#84E44B', item.role, item.name)}
+                                            {week5 > 0 && renderBars(totalFeb, week5, '#60CAC4', item.role, item.name)}
                                         </div>
                                     </div>
                                     <div className="col-2 fs-5">                 
@@ -181,11 +186,11 @@ const ChartsJanuari = () => {
                                     </div>
                                     <div className='col-10 me-2 text-start rounded-3 ' style={{ backgroundColor: '#D9D9D9', padding: '0.5vw' }}>
                                         <div className="row mx-2 d-flex" style={{ height: '1.7vw' }}>
-                                            {week1 > 0 && renderBars(totalFeb, week1, '#F86161', item.role)}
-                                            {week2 > 0 && renderBars(totalFeb, week2, '#FFA336', item.role)}
-                                            {week3 > 0 && renderBars(totalFeb, week3, '#FFD542', item.role)}
-                                            {week4 > 0 && renderBars(totalFeb, week4, '#84E44B', item.role)}
-                                            {week5 > 0 && renderBars(totalFeb, week5, '#60CAC4', item.role)}
+                                            {week1 > 0 && renderBars(totalFeb, week1, '#F86161', item.role, item.name)}
+                                            {week2 > 0 && renderBars(totalFeb, week2, '#FFA336', item.role, item.name)}
+                                            {week3 > 0 && renderBars(totalFeb, week3, '#FFD542', item.role, item.name)}
+                                            {week4 > 0 && renderBars(totalFeb, week4, '#84E44B', item.role, item.name)}
+                                            {week5 > 0 && renderBars(totalFeb, week5, '#60CAC4', item.role, item.name)}
                                         </div>
                                     </div>
                                     <div className="col-2 fs-5">                 
@@ -205,10 +210,13 @@ const ChartsJanuari = () => {
     );
 };
 
-function renderBars(total, weekValue, color, role) {
+function renderBars(total, weekValue, color, role, name) {
     let goal = 6600;
     if (role === 'auto') {
       goal = 7920;
+    }
+    if (name === 'Gita') {
+        goal = 250;
     }
     
     const parsedWeekValue = parseInt(weekValue, 10);
@@ -222,5 +230,6 @@ function renderBars(total, weekValue, color, role) {
       </div>
     );
 }
+
 
 export default ChartsJanuari;
