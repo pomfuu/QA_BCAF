@@ -131,6 +131,7 @@ const SummaryPage = () => {
       case 'Alzre':
       case 'Izza':
       case 'Rania':
+      case 'Aldo':
       case 'Yuda':
       case 'Gita':
         return 'manual';
