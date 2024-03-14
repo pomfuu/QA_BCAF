@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import { Modal, Button } from 'react-bootstrap';
@@ -16,7 +17,7 @@ import { Link } from 'react-router-dom';
 
 const InputContent = () => {
   const weeks = ["Week 1", "Week 2", "Week 3", "Week 4", "Week 5"];
-  const names = ["Alin", "Alzre", "Cindy", "Daniel", "Dimas", "Fajar", "Gita", "Izza", "Khusnul", "Rania", "Yuda"];
+  const names = ["Alin", "Alzre", "Cindy", "Daniel", "Jerry", "Dimas", "Fajar", "Izza", "Khusnul", "Rania", "Yuda", "Aldo", "Gita"];
   const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
   // State for managing table data
@@ -84,14 +85,16 @@ const InputContent = () => {
         case 'Cindy':
         case 'Daniel':
         case 'Dimas':
+        case 'Jerry':
         case 'Fajar':
         case 'Khusnul':
           return 'auto';
         case 'Alzre':
-        case 'Gita':
         case 'Izza':
         case 'Rania':
         case 'Yuda':
+        case 'Aldo':
+        case 'Gita':
           return 'manual';
         default:
           return '';

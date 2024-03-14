@@ -1,9 +1,8 @@
-/* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
 import React, { useRef, useState, useEffect } from 'react';
-import { Table } from 'react-bootstrap';
+import { Button, Table } from 'react-bootstrap';
 import PropTypes from 'prop-types';
-import { doc, updateDoc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, updateDoc, getDoc, setDoc, collection, addDoc } from 'firebase/firestore';
 import db from '../firebaseconfig.js';
 
 const ContentRightMei = ({ selectedMonth }) => {
@@ -14,20 +13,14 @@ const ContentRightMei = ({ selectedMonth }) => {
         week2: '',
         week3: '',
         week4: '',
-        week5: ''
+        week5: '',
+        totalWeek: ''
     });
-
-    useEffect(() => {
-        const storedImages = localStorage.getItem(`uploadedImages_${selectedMonth}`);
-        if (storedImages) {
-            setUploadedImages(JSON.parse(storedImages));
-        }
-    }, [selectedMonth]);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const docRef = doc(db, 'weeksData', selectedMonth);
+                const docRef = doc(db, selectedMonth, 'weeksData');
                 const docSnap = await getDoc(docRef);
                 if (docSnap.exists()) {
                     const data = docSnap.data();
@@ -79,8 +72,15 @@ const ContentRightMei = ({ selectedMonth }) => {
     const handleWeekDataChange = async (week, value) => {
         try {
             const updatedData = { ...weekData, [week]: value };
-            setWeekData(updatedData);
-            const docRef = doc(db, 'weeksData', selectedMonth);
+            setWeekData(updatedData); 
+            const weekDataCollectionRef = collection(db, 'weekDataCollection');
+            await addDoc(weekDataCollectionRef, {
+                week,
+                value,
+                timestamp: new Date(),
+                month: selectedMonth
+            });
+            const docRef = doc(db, selectedMonth, 'weeksData');
             await updateDoc(docRef, updatedData);
             console.log('Week data saved successfully.');
         } catch (error) {
@@ -88,8 +88,19 @@ const ContentRightMei = ({ selectedMonth }) => {
         }
     };
 
+    const handleSaveChanges = async () => {
+        try {
+            console.log('Saving changes for month:', selectedMonth);
+            const docRef = doc(db, selectedMonth, 'weeksData');
+            await updateDoc(docRef, weekData);
+            console.log('Week data saved successfully.');
+        } catch (error) {
+            console.error('Error updating week data:', error);
+        }
+    };
+
     ContentRightMei.propTypes = {
-        selectedMonth: PropTypes.string.isRequired, 
+        selectedMonth: PropTypes.string.isRequired,
     };
 
     return (
@@ -122,11 +133,12 @@ const ContentRightMei = ({ selectedMonth }) => {
                         <Table size='sm' hover>
                             <thead className='text-center'>
                                 <tr>
-                                    <th className='text-white' style={{ backgroundColor:'#F86161' }}>Week 1</th>
-                                    <th className='text-white' style={{ backgroundColor:'#FFA336' }}>Week 2</th>
-                                    <th className='text-white' style={{ backgroundColor:'#FFD542' }}>Week 3</th>
-                                    <th className='text-white' style={{ backgroundColor:'#84E44B' }}>Week 4</th>
-                                    <th className='text-white' style={{ backgroundColor:'#26D2C7' }}>Week 5</th>
+                                    <th className='text-white' style={{ backgroundColor: '#F86161' }}>Week 1</th>
+                                    <th className='text-white' style={{ backgroundColor: '#FFA336' }}>Week 2</th>
+                                    <th className='text-white' style={{ backgroundColor: '#FFD542' }}>Week 3</th>
+                                    <th className='text-white' style={{ backgroundColor: '#84E44B' }}>Week 4</th>
+                                    <th className='text-white' style={{ backgroundColor: '#26D2C7' }}>Week 5</th>
+                                    <th className='text-white' style={{ backgroundColor: '#1e1e1e' }}>Total</th>
                                 </tr>
                             </thead>
                             <tbody className='text-center'>
@@ -136,28 +148,16 @@ const ContentRightMei = ({ selectedMonth }) => {
                                     <td contentEditable onBlur={(e) => handleWeekDataChange('week3', e.target.innerText)}>{weekData.week3}</td>
                                     <td contentEditable onBlur={(e) => handleWeekDataChange('week4', e.target.innerText)}>{weekData.week4}</td>
                                     <td contentEditable onBlur={(e) => handleWeekDataChange('week5', e.target.innerText)}>{weekData.week5}</td>
+                                    <td contentEditable onBlur={(e) => handleWeekDataChange('total', e.target.innerText)}>{weekData.total}</td>
                                 </tr>
                             </tbody>
                         </Table>
                     </div>
-                    <div className="row align-items-top" style={{ fontSize:'0.8rem', marginTop:'-0.7vw' }}>
-                        <div style={{ color:'#1e1e1e' }} className="col-3 fw-bold">
-                            WIG
-                        </div>
-                        <div className="col-9">
-                            pencapaian SLA penyelesaian project dari 75% ke 90%
-                        </div>
-                        <div className="col-3 fw-bold mt-1">
-                            LEAD
-                        </div>
-                        <div style={{ color:'#1e1e1e' }} className="col-9 mt-1">
-                            Automation: <b>1800/Week</b> or <b>7200/Month</b> | Manual: <b>1500/Week</b> or <b>6000/Month</b>
-                        </div>
-                    </div>
+                    <Button className='border-0 font2 px-4' style={{ backgroundColor:'#00BDB2' }} onClick={handleSaveChanges}>Save</Button>
                 </div>
             </div>
         </div>
     );
-}
+};
 
 export default ContentRightMei;
