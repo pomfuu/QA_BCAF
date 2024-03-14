@@ -124,6 +124,7 @@ const SummaryPage = () => {
       case 'Cindy':
       case 'Daniel':
       case 'Dimas':
+      case 'Jerry':
       case 'Fajar':
       case 'Khusnul':
         return 'auto';

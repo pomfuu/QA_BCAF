@@ -25,7 +25,7 @@ const ChartsApril = () => {
                     const autoData = [];
                     const manualData = [];
                     Object.keys(februarySummaryData.data).forEach(name => {
-                        const role = ['Alin', 'Cindy', 'Daniel', 'Dimas', 'Khusnul', 'Fajar'].includes(name) ? 'auto' : 'manual';
+                        const role = ['Alin', 'Cindy', 'Daniel', 'Dimas', 'Khusnul', 'Fajar', 'Jerry'].includes(name) ? 'auto' : 'manual';
                         const weeks = februarySummaryData.data[name].weeks;
                         const weekSteps = {
                             'Week 1': weeks['Week 1'] ? weeks['Week 1'].steps : 0,
