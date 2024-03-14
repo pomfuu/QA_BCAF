@@ -55,11 +55,18 @@ const SummaryPage = () => {
       const newAveragePercent = {};
 
       for (const month in newSummaryData) {
-        const totalWeek = totalWeeks[month];
         for (const name in newSummaryData[month]) {
           const role = getRole(name);
-          newMonthlyTarget[`${month}-${name}`] = role === 'auto' ? 1800 * totalWeek : 1500 * totalWeek;
-          newAveragePercent[`${month}-${name}`] = calculateAveragePercent(newSummaryData[month][name].totalSteps, newMonthlyTarget[`${month}-${name}`]);
+          let target;
+          if (role === 'auto') {
+            target = 1800 * totalWeeks[month];
+          } else if (role === 'spv') {
+            target = 250;
+          } else {
+            target = 1500 * totalWeeks[month];
+          }
+          newMonthlyTarget[`${month}-${name}`] = target;
+          newAveragePercent[`${month}-${name}`] = calculateAveragePercent(newSummaryData[month][name].totalSteps, target);
         }
       }
 
@@ -127,12 +134,14 @@ const SummaryPage = () => {
       case 'Jerry':
         return 'auto';
       case 'Alzre':
-      case 'Gita':
+      // case 'Gita':
       case 'Izza':
       case 'Rania':
       case 'Yuda':
       case 'Aldo':
         return 'manual';
+      case 'Gita':
+        return 'spv';
       default:
         return '';
     }
@@ -164,10 +173,35 @@ const SummaryPage = () => {
     );
   };
 
+  const sortedData = Object.entries(summaryData[selectedMonth] || {}).map(([name, data]) => {
+    const role = getRole(name);
+    const target = role === 'auto' ? 1800 : 1500;
+    const percentage = calculateAveragePercent(data.totalSteps, target);
+      
+    return { name, data, percentage, role };
+  }).sort((a, b) => {
+    // Sort by role first
+    if (a.role === 'manual' && b.role === 'manual') {
+      // For manual roles, sort by percentage in descending order
+      return b.percentage - a.percentage;
+    } else if (a.role === 'auto' && b.role === 'auto') {
+      // For auto roles, sort by percentage in descending order
+      return b.percentage - a.percentage;
+    } else {
+      // Sort manual roles before auto roles
+      return a.role === 'manual' ? -1 : 1;
+    }
+  });
+  
+  
+
+  const kakGita = sortedData.find(entry => entry.name === 'Gita');
+  const otherData = sortedData.filter(entry => entry.name !== 'Gita');
+
   const renderTableBody = () => {
     return (
       <tbody>
-        {sortedData.map(([name, data]) => (
+        {otherData.map(({ name, data }) => (
           <tr key={name} className='align-middle text-center'>
             <td rowSpan="1" style={{ backgroundColor: '#DAD6CA' }}>{name}</td>
             {Array.from({ length: totalWeeks[selectedMonth] || 5 }, (_, i) => i + 1).map(week => {
@@ -177,7 +211,6 @@ const SummaryPage = () => {
               const role = getRole(name);
               const target = role === 'auto' ? 1800 : 1500;
               const backgroundColor = steps < target ? '#CF3D3D' : '#83EC44';
-              // const backgroundColor = averagePercent < 100 ? '#CF3D3D' : '#83EC44';
               return (
                 <React.Fragment key={week}>
                   <td style={{ backgroundColor, cursor: 'pointer' }} onClick={() => handleCellClick(name, week)}>{steps}</td>
@@ -190,43 +223,29 @@ const SummaryPage = () => {
             <td style={{ backgroundColor: averagePercent[`${selectedMonth}-${name}`] && averagePercent[`${selectedMonth}-${name}`] >= 100 ? '#83EC44' : '#CF3D3D' }}>{averagePercent[`${selectedMonth}-${name}`] ? averagePercent[`${selectedMonth}-${name}`].toFixed(2) + '%' : '0%'}</td>
           </tr>
         ))}
+        {/* Render Gita's data separately */}
         {kakGita && (
-          <tr key={kakGita[0]} className='align-middle text-center'>
-            <td rowSpan="1" style={{ backgroundColor: '#DAD6CA' }}>{kakGita[0]}</td>
+          <tr key={kakGita.name} className='align-middle text-center'>
+            <td rowSpan="1" style={{ backgroundColor: '#DAD6CA' }}>{kakGita.name}</td>
             {Array.from({ length: totalWeeks[selectedMonth] || 5 }, (_, i) => i + 1).map(week => {
-              const weekData = kakGita[1].weeks[`Week ${week}`];
+              const weekData = kakGita.data.weeks[`Week ${week}`];
               const steps = weekData ? weekData.steps : 0;
               const scenario = weekData ? weekData.scenario : '-';
-              const backgroundColor = steps < 1500 ? '#CF3D3D' : '#83EC44';
               return (
                 <React.Fragment key={week}>
-                  <td style={{ backgroundColor, cursor: 'pointer' }}>{steps}</td>
+                  <td style={{ backgroundColor: '#83EC44', cursor: 'pointer' }}>{steps}</td>
                   <td style={{ backgroundColor: '#DAD6CA' }}>{scenario}</td>
                 </React.Fragment>
               );
             })}
-            <td style={{ backgroundColor: '#DAD6CA' }}>{kakGita[1].totalSteps || 0}</td>
-            <td style={{ backgroundColor: '#DAD6CA' }}>{monthlyTarget[`${selectedMonth}-${kakGita[0]}`] || 0}</td>
-            <td style={{ backgroundColor: averagePercent[`${selectedMonth}-${kakGita[0]}`] && averagePercent[`${selectedMonth}-${kakGita[0]}`] >= 100 ? '#83EC44' : '#CF3D3D' }}>{averagePercent[`${selectedMonth}-${kakGita[0]}`] ? averagePercent[`${selectedMonth}-${kakGita[0]}`].toFixed(2) + '%' : '0%'}</td>
+            <td style={{ backgroundColor: '#DAD6CA' }}>{kakGita.data.totalSteps || 0}</td>
+            <td style={{ backgroundColor: '#DAD6CA' }}>{monthlyTarget[`${selectedMonth}-${kakGita.name}`] || 0}</td>
+            <td style={{ backgroundColor: averagePercent[`${selectedMonth}-${kakGita.name}`] && averagePercent[`${selectedMonth}-${kakGita.name}`] >= 100 ? '#83EC44' : '#CF3D3D' }}>{averagePercent[`${selectedMonth}-${kakGita.name}`] ? averagePercent[`${selectedMonth}-${kakGita.name}`].toFixed(2) + '%' : '0%'}</td>
           </tr>
         )}
       </tbody>
     );
   };
-
-  const sortedData = Object.entries(summaryData[selectedMonth] || {}).sort((a, b) => {
-    const roleA = getRole(a[0]);
-    const roleB = getRole(b[0]);
-    if (roleA === roleB) {
-      return a[0].localeCompare(b[0]);
-    }
-    if (roleA === 'manual') return 1;
-    if (roleB === 'manual') return -1;
-    return 0;
-  });
-
-  const kakGita = sortedData.find(([name]) => name === 'Gita');
-  const otherData = sortedData.filter(([name]) => name !== 'Gita');
 
   return (
     <div>
