@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from 'react';
 import { collection, getDocs, doc, setDoc } from 'firebase/firestore';
 import db from './firebaseconfig';
@@ -7,13 +6,26 @@ import { Table, Modal, Button } from 'react-bootstrap';
 const SummaryPage = () => {
   const [summaryData, setSummaryData] = useState({});
   const [selectedMonth, setSelectedMonth] = useState('');
-  const [selectedCellData, setSelectedCellData] = useState(null); // To store the data of the clicked cell
-  const [selectedCellNotes, setSelectedCellNotes] = useState(null); // To store the notes of the clicked cell
-  const [monthlyTarget, setMonthlyTarget] = useState({}); // To store the monthly target for each person
-  const [stepsDebt, setStepsDebt] = useState({}); // To store the steps debt for each person
-  const [averagePercent, setAveragePercent] = useState({}); // To store the average percentage for each person
+  const [selectedCellData, setSelectedCellData] = useState(null);
+  const [selectedCellNotes, setSelectedCellNotes] = useState(null);
+  const [monthlyTarget, setMonthlyTarget] = useState({});
+  const [averagePercent, setAveragePercent] = useState({});
   const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-  const [getScenario, setScenario] = useState(null);
+
+  const totalWeeks = {
+    January: 5,
+    February: 4,
+    March: 5,
+    April: 4,
+    May: 5,
+    June: 5,
+    July: 5,
+    August: 5,
+    September: 5,
+    October: 5,
+    November: 5,
+    December: 5
+  };
 
   useEffect(() => {
     generateSummary();
@@ -24,93 +36,79 @@ const SummaryPage = () => {
       const querySnapshot = await getDocs(collection(db, 'entries'));
       const entries = querySnapshot.docs.map(doc => doc.data());
 
-      // Initialize summary data
-      const summaryData = {};
+      const newSummaryData = {};
 
-      // Group entries by month and then by name
       entries.forEach(entry => {
         if (entry.confirmed) {
           const { name, month, week, steps, notes, scenario } = entry;
-          if (!summaryData[month]) {
-            summaryData[month] = {};
-          }
-          if (!summaryData[month][name]) {
-            summaryData[month][name] = { totalSteps: 0, weeks: {} };
-          }
-          if (!summaryData[month][name].weeks[week]) {
-            summaryData[month][name].weeks[week] = { steps: 0, notes, scenario};
-          }
-          summaryData[month][name].weeks[week].steps += parseFloat(steps);
-          summaryData[month][name].totalSteps += parseFloat(steps);
+          newSummaryData[month] = newSummaryData[month] || {};
+          newSummaryData[month][name] = newSummaryData[month][name] || { totalSteps: 0, weeks: {} };
+          newSummaryData[month][name].weeks[week] = newSummaryData[month][name].weeks[week] || { steps: 0, notes, scenario };
+          newSummaryData[month][name].weeks[week].steps += parseFloat(steps);
+          newSummaryData[month][name].totalSteps += parseFloat(steps);
         }
       });
 
-      // Update state with summary data
-      setSummaryData(summaryData);
+      setSummaryData(newSummaryData);
 
-      const getWeeksInMonth = (year, month) => {
-        const firstDay = new Date(year, month, 1);
-        const lastDay = new Date(year, month + 1, 0);
-        const daysInMonth = lastDay.getDate() - firstDay.getDate() + 1;
-        return Math.ceil(daysInMonth / 7);
-      }
+      const newMonthlyTarget = {};
+      const newAveragePercent = {};
 
-      const getMonthNumber = (monthName) => {
-        const months = {
-          January: 0, February: 1, March: 2, April: 3, May: 4, June: 5,
-          July: 6, August: 7, September: 8, October: 9, November: 10, December: 11
-        };
-        return months[monthName];
-      }
-
-      // Calculate monthly target, steps debt, and average percent for each person
-      const target = {};
-      const debt = {};
-      const percent = {};
-      const scenarioz = {};
-      for (const month in summaryData) {
-        for (const name in summaryData[month]) {
-          const monthNumber = getMonthNumber(month);
-          const weeksInCurrentMonth = getWeeksInMonth(2024, monthNumber);
-          const steps = summaryData[month][name].totalSteps;
-          const weeks = Object.keys(summaryData[month][name].weeks).length;
-          const role = getRole(name); // Get role using the getRole function
-          //////////////////////////////////////////////////////////////////////////////
-          target[name] = role === 'auto' ? 1800 * weeksInCurrentMonth : 1500 * weeksInCurrentMonth;
-          debt[name] = parseFloat(target[name] - steps);
-          percent[name] = (steps / target[name]) * 100;
+      for (const month in newSummaryData) {
+        const totalWeek = totalWeeks[month];
+        for (const name in newSummaryData[month]) {
+          const role = getRole(name);
+          newMonthlyTarget[`${month}-${name}`] = role === 'auto' ? 1800 * totalWeek : 1500 * totalWeek;
+          newAveragePercent[`${month}-${name}`] = calculateAveragePercent(newSummaryData[month][name].totalSteps, newMonthlyTarget[`${month}-${name}`]);
         }
       }
-      setMonthlyTarget(target);
-      // setStepsDebt(debt);
-      setAveragePercent(percent);
-      console.log('Summary generated successfully.');
 
-      // Add summary data to Firestore
+      setMonthlyTarget(newMonthlyTarget);
+      setAveragePercent(newAveragePercent);
+
+      // Update Firestore
+      await updateFirestore(newSummaryData, newMonthlyTarget, newAveragePercent);
+
+      console.log('Summary generated successfully.');
+    } catch (error) {
+      console.error('Error generating summary:', error);
+    }
+  };
+
+  const updateFirestore = async (summaryData, monthlyTarget, averagePercent) => {
+    try {
       for (const month in summaryData) {
         const summaryDocRef = doc(db, 'summary', month);
         await setDoc(summaryDocRef, {
           month,
           data: summaryData[month],
-          monthlyTarget: target,
-          // stepsDebt: debt,
-          averagePercent: percent
+          monthlyTarget,
+          averagePercent
         });
         console.log(`Summary for ${month} added to Firestore.`);
       }
     } catch (error) {
-      console.error('Error generating summary:', error);
+      console.error('Error updating Firestore:', error);
     }
+  };
+
+  const calculateAveragePercent = (totalSteps, monthlyTarget) => {
+    return totalSteps && monthlyTarget ? (totalSteps / monthlyTarget) * 100 : 0;
   };
 
   const handleMonthChange = (e) => {
     setSelectedMonth(e.target.value);
   };
 
-  const handleCellClick = (name, week, notes) => {
-    const { steps, notes: cellNotes } = summaryData[selectedMonth][name].weeks[`Week ${week}`];
-    setSelectedCellData(steps);
-    setSelectedCellNotes(cellNotes);
+  const handleCellClick = (name, week) => {
+    const weekData = summaryData[selectedMonth]?.[name]?.weeks[`Week ${week}`];
+    if (weekData) {
+      setSelectedCellData(weekData.steps);
+      setSelectedCellNotes(weekData.notes);
+    } else {
+      setSelectedCellData(null);
+      setSelectedCellNotes(null);
+    }
   };
 
   const handleCloseModal = () => {
@@ -124,20 +122,96 @@ const SummaryPage = () => {
       case 'Cindy':
       case 'Daniel':
       case 'Dimas':
-      case 'Jerry':
       case 'Fajar':
       case 'Khusnul':
+      case 'Jerry':
         return 'auto';
       case 'Alzre':
+      case 'Gita':
       case 'Izza':
       case 'Rania':
-      case 'Aldo':
       case 'Yuda':
-      case 'Gita':
+      case 'Aldo':
         return 'manual';
       default:
         return '';
     }
+  };
+
+  const renderTableHeader = () => {
+    return (
+      <thead>
+        <tr className="align-middle text-center" style={{ height: '50px' }}>
+          <th rowSpan="2" className='custom-table-header' style={{ width: '10%' }}>Name</th>
+          {Array.from({ length: totalWeeks[selectedMonth] || 5 }, (_, i) => i + 1).map(week => (
+            <React.Fragment key={week}>
+              <th colSpan="2" className='custom-table-header' style={{ width: '10%' }}>Week {week}</th>
+            </React.Fragment>
+          ))}
+          <th rowSpan="2" className='custom-table-header' style={{ width: '10%' }}>Total Steps</th>
+          <th rowSpan="2" className='custom-table-header' style={{ width: '10%' }}>Monthly Target</th>
+          <th rowSpan="2" className='custom-table-header' style={{ width: '10%' }}>Achievement (%)</th>
+        </tr>
+        <tr className="align-middle text-center" style={{ height: '50px' }}>
+          {Array.from({ length: totalWeeks[selectedMonth] || 5 }, (_, i) => i + 1).map(week => (
+            <React.Fragment key={week}>
+              <th className='custom-table-header' style={{ width: '5%' }}>Steps</th>
+              <th className='custom-table-header' style={{ width: '5%' }}>Scenario</th>
+            </React.Fragment>
+          ))}
+        </tr>
+      </thead>
+    );
+  };
+
+  const renderTableBody = () => {
+    return (
+      <tbody>
+        {sortedData.map(([name, data]) => (
+          <tr key={name} className='align-middle text-center'>
+            <td rowSpan="1" style={{ backgroundColor: '#DAD6CA' }}>{name}</td>
+            {Array.from({ length: totalWeeks[selectedMonth] || 5 }, (_, i) => i + 1).map(week => {
+              const weekData = data.weeks[`Week ${week}`];
+              const steps = weekData ? weekData.steps : 0;
+              const scenario = weekData ? weekData.scenario : '-';
+              const role = getRole(name);
+              const target = role === 'auto' ? 1800 : 1500;
+              const backgroundColor = steps < target ? '#CF3D3D' : '#83EC44';
+              // const backgroundColor = averagePercent < 100 ? '#CF3D3D' : '#83EC44';
+              return (
+                <React.Fragment key={week}>
+                  <td style={{ backgroundColor, cursor: 'pointer' }} onClick={() => handleCellClick(name, week)}>{steps}</td>
+                  <td style={{ backgroundColor: '#DAD6CA' }}>{scenario}</td>
+                </React.Fragment>
+              );
+            })}
+            <td style={{ backgroundColor: '#DAD6CA' }}>{data.totalSteps || 0}</td>
+            <td style={{ backgroundColor: '#DAD6CA' }}>{monthlyTarget[`${selectedMonth}-${name}`] || 0}</td>
+            <td style={{ backgroundColor: averagePercent[`${selectedMonth}-${name}`] && averagePercent[`${selectedMonth}-${name}`] >= 100 ? '#83EC44' : '#CF3D3D' }}>{averagePercent[`${selectedMonth}-${name}`] ? averagePercent[`${selectedMonth}-${name}`].toFixed(2) + '%' : '0%'}</td>
+          </tr>
+        ))}
+        {kakGita && (
+          <tr key={kakGita[0]} className='align-middle text-center'>
+            <td rowSpan="1" style={{ backgroundColor: '#DAD6CA' }}>{kakGita[0]}</td>
+            {Array.from({ length: totalWeeks[selectedMonth] || 5 }, (_, i) => i + 1).map(week => {
+              const weekData = kakGita[1].weeks[`Week ${week}`];
+              const steps = weekData ? weekData.steps : 0;
+              const scenario = weekData ? weekData.scenario : '-';
+              const backgroundColor = steps < 1500 ? '#CF3D3D' : '#83EC44';
+              return (
+                <React.Fragment key={week}>
+                  <td style={{ backgroundColor, cursor: 'pointer' }}>{steps}</td>
+                  <td style={{ backgroundColor: '#DAD6CA' }}>{scenario}</td>
+                </React.Fragment>
+              );
+            })}
+            <td style={{ backgroundColor: '#DAD6CA' }}>{kakGita[1].totalSteps || 0}</td>
+            <td style={{ backgroundColor: '#DAD6CA' }}>{monthlyTarget[`${selectedMonth}-${kakGita[0]}`] || 0}</td>
+            <td style={{ backgroundColor: averagePercent[`${selectedMonth}-${kakGita[0]}`] && averagePercent[`${selectedMonth}-${kakGita[0]}`] >= 100 ? '#83EC44' : '#CF3D3D' }}>{averagePercent[`${selectedMonth}-${kakGita[0]}`] ? averagePercent[`${selectedMonth}-${kakGita[0]}`].toFixed(2) + '%' : '0%'}</td>
+          </tr>
+        )}
+      </tbody>
+    );
   };
 
   const sortedData = Object.entries(summaryData[selectedMonth] || {}).sort((a, b) => {
@@ -182,82 +256,12 @@ const SummaryPage = () => {
         <div>
           <h2 className='font2'>{selectedMonth}</h2>
           <Table bordered>
-            <thead>
-              <tr className="align-middle text-center" style={{ height: '50px' }}>
-                <th rowSpan="2" className='custom-table-header' style={{ width: '10%' }}>Name</th>
-                {Array.from({ length: 5 }, (_, i) => i + 1).map(week => (
-                  <React.Fragment key={week}>
-                    <th colSpan="2" className='custom-table-header' style={{ width: '12%' }}>Week {week}</th>
-                  </React.Fragment>
-                ))}
-                <th rowSpan="2" className='custom-table-header' style={{ width: '10%' }}>Total Steps</th>
-                <th rowSpan="2" className='custom-table-header' style={{ width: '10%' }}>Monthly Target</th>
-                {/* <th rowSpan="2" className='custom-table-header' style={{ width: '10%' }}>Steps Debt</th> */}
-                <th rowSpan="2" className='custom-table-header' style={{ width: '10%' }}>Achievement (%)</th>
-              </tr>
-              <tr className="align-middle text-center" style={{ height: '50px' }}>
-                {Array.from({ length: 5 }, (_, i) => i + 1).map(week => (
-                  <React.Fragment key={week}>
-                    <th className='custom-table-header' style={{ width: '6%' }}>Steps</th>
-                    <th className='custom-table-header' style={{ width: '6%' }}>Scenario</th>
-                  </React.Fragment>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-                {/* Render other data except 'Kak Gita' */}
-                {otherData.map(([name, data]) => (
-                  <tr key={name} className='align-middle text-center'>
-                    <td rowSpan="1" style={{ backgroundColor: '#DAD6CA' }}>{name}</td>
-                    {Array.from({ length: 5 }, (_, i) => i + 1).map(week => {
-                      const steps = data.weeks[`Week ${week}`] ? data.weeks[`Week ${week}`].steps : 0;
-                      const role = getRole(name);
-                      const target = role === 'auto' ? 1800 : 1500;
-                      const backgroundColor = steps < target ? '#CF3D3D' : '#83EC44';
-                      return (
-                        <React.Fragment key={week}>
-                          <td style={{ backgroundColor, cursor: 'pointer'}} onClick={() => handleCellClick(name, week)}>{steps}</td>
-                          <td style={{ backgroundColor: '#DAD6CA' }}>
-                            {data.weeks[`Week ${week}`] ? data.weeks[`Week ${week}`].scenario : ''}
-                          </td>
-                        </React.Fragment>
-                      );
-                    })}
-                    {/* Display total steps, monthly target, and average percentage */}
-                    <td style={{ backgroundColor: '#DAD6CA' }}>{data.totalSteps || 0}</td>
-                    <td style={{ backgroundColor: '#DAD6CA' }}>{monthlyTarget[name] || 0}</td>
-                    <td style={{ backgroundColor: '#DAD6CA' }}>{averagePercent[name] ? averagePercent[name].toFixed(2) + '%' : '0%'}</td>
-                  </tr>
-                ))}
-
-                {/* Render 'Kak Gita' separately at the bottom */}
-                {kakGita && (
-                  <tr key={kakGita[0]} className='align-middle text-center'>
-                  <td rowSpan="1" style={{ backgroundColor: '#DAD6CA' }}>{kakGita[0]}</td>
-                  {Array.from({ length: 5 }, (_, i) => i + 1).map(week => {
-                    const steps = kakGita[1].weeks[`Week ${week}`] ? kakGita[1].weeks[`Week ${week}`].steps : 0;
-                    // const backgroundColor = steps < 1500 ? '#CF3D3D' : '#83EC44'; // Assuming manual role for 'Gita'
-                    return (
-                      <React.Fragment key={week}>
-                        <td style={{backgroundColor: '#DAD6CA', cursor: 'pointer'}} onClick={() => handleCellClick(kakGita[0], week)}>{steps}</td>
-                        <td style={{ backgroundColor: '#DAD6CA' }}>
-                          {kakGita[1].weeks[`Week ${week}`] ? kakGita[1].weeks[`Week ${week}`].scenario : ''}
-                        </td>
-                      </React.Fragment>
-                    );
-                  })}
-                  <td style={{ backgroundColor: '#DAD6CA' }}>{kakGita[1].totalSteps || 0}</td>
-                  <td style={{ backgroundColor: '#DAD6CA' }}>{monthlyTarget[kakGita[0]] || 0}</td>
-                  <td style={{ backgroundColor: '#DAD6CA' }}>{averagePercent[kakGita[0]] ? averagePercent[kakGita[0]].toFixed(2) + '%' : '0%'}</td>
-                </tr>
-                )}
-              </tbody>
-
+            {renderTableHeader()}
+            {renderTableBody()}
           </Table>
         </div>
       )}
 
-      {/* Modal for displaying cell data */}
       <Modal show={selectedCellData !== null} onHide={handleCloseModal}>
         <Modal.Header closeButton>
           <Modal.Title>Notes</Modal.Title>
