@@ -47,6 +47,21 @@ const ChartsAll = () => {
         setSelectedMonth(month);
     };
 
+    const contentRightComponents = [
+        ContentRightJan,
+        ContentRightFeb,
+        ContentRightMar,
+        ContentRightApr,
+        ContentRightMei,
+        ContentRightJun,
+        ContentRightJul,
+        ContentRightAgs,
+        ContentRightSep,
+        ContentRightOct,
+        ContentRightNov,
+        ContentRightDes
+    ];
+
     return (
     <div className='container-fluid'>
         <div className="row align-items-center">
@@ -83,18 +98,18 @@ const ChartsAll = () => {
                 {selectedMonth === 'December' && <ChartsDesember />}
             </div>
             <div className="col-12">
-                {selectedMonth === 'January' && <ContentRightJan />}
-                {selectedMonth === 'March' && <ContentRightMar />}
-                {selectedMonth === 'April' && <ContentRightApr />}
-                {selectedMonth === 'May' && <ContentRightMei />}
-                {selectedMonth === 'June' && <ContentRightJun />}
-                {selectedMonth === 'July' && <ContentRightJul />}
-                {selectedMonth === 'August' && <ContentRightAgs />}
-                {selectedMonth === 'September' && <ContentRightSep />}
-                {selectedMonth === 'February' && <ContentRightFeb />}
-                {selectedMonth === 'October' && <ContentRightOct />}
-                {selectedMonth === 'November' && <ContentRightNov />}
-                {selectedMonth === 'December' && <ContentRightDes />}
+                {selectedMonth === 'January' && <ContentRightJan selectedMonth={selectedMonth} />}
+                {selectedMonth === 'February' && <ContentRightFeb selectedMonth={selectedMonth} />}
+                {selectedMonth === 'March' && <ContentRightMar selectedMonth={selectedMonth} />}
+                {selectedMonth === 'April' && <ContentRightApr selectedMonth={selectedMonth} />}
+                {selectedMonth === 'May' && <ContentRightMei selectedMonth={selectedMonth} />}
+                {selectedMonth === 'June' && <ContentRightJun selectedMonth={selectedMonth} />}
+                {selectedMonth === 'July' && <ContentRightJul selectedMonth={selectedMonth} />}
+                {selectedMonth === 'August' && <ContentRightAgs selectedMonth={selectedMonth} />}
+                {selectedMonth === 'September' && <ContentRightSep selectedMonth={selectedMonth} />}
+                {selectedMonth === 'October' && <ContentRightOct selectedMonth={selectedMonth} />}
+                {selectedMonth === 'November' && <ContentRightNov selectedMonth={selectedMonth} />}
+                {selectedMonth === 'December' && <ContentRightDes selectedMonth={selectedMonth} />}
             </div>
         </div>
     </div>

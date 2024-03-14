@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-vars */
 import React, { useRef, useState, useEffect } from 'react';
-import { Table } from 'react-bootstrap';
+import { Button, Table } from 'react-bootstrap';
 import PropTypes from 'prop-types';
-import { doc, updateDoc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, updateDoc, getDoc, setDoc, collection, addDoc } from 'firebase/firestore';
 import db from '../firebaseconfig.js';
 
 const ContentRightJun = ({ selectedMonth }) => {
@@ -18,16 +18,9 @@ const ContentRightJun = ({ selectedMonth }) => {
     });
 
     useEffect(() => {
-        const storedImages = localStorage.getItem(`uploadedImages_${selectedMonth}`);
-        if (storedImages) {
-            setUploadedImages(JSON.parse(storedImages));
-        }
-    }, [selectedMonth]);
-
-    useEffect(() => {
         const fetchData = async () => {
             try {
-                const docRef = doc(db, 'weeksData', selectedMonth);
+                const docRef = doc(db, selectedMonth, 'weeksData');
                 const docSnap = await getDoc(docRef);
                 if (docSnap.exists()) {
                     const data = docSnap.data();
@@ -41,14 +34,6 @@ const ContentRightJun = ({ selectedMonth }) => {
             }
         };
         fetchData();
-    }, [selectedMonth]);
-
-    useEffect(() => {
-        // Retrieve week data from localStorage when component mounts
-        const storedWeekData = localStorage.getItem(`weekData_${selectedMonth}`);
-        if (storedWeekData) {
-            setWeekData(JSON.parse(storedWeekData));
-        }
     }, [selectedMonth]);
 
     const handleFileUpload = (event) => {
@@ -87,10 +72,27 @@ const ContentRightJun = ({ selectedMonth }) => {
     const handleWeekDataChange = async (week, value) => {
         try {
             const updatedData = { ...weekData, [week]: value };
-            setWeekData(updatedData);
-            localStorage.setItem(`weekData_${selectedMonth}`, JSON.stringify(updatedData)); // Store updated week data in localStorage
-            const docRef = doc(db, 'weeksData', selectedMonth);
+            setWeekData(updatedData); 
+            const weekDataCollectionRef = collection(db, 'weekDataCollection');
+            await addDoc(weekDataCollectionRef, {
+                week,
+                value,
+                timestamp: new Date(),
+                month: selectedMonth
+            });
+            const docRef = doc(db, selectedMonth, 'weeksData');
             await updateDoc(docRef, updatedData);
+            console.log('Week data saved successfully.');
+        } catch (error) {
+            console.error('Error updating week data:', error);
+        }
+    };
+
+    const handleSaveChanges = async () => {
+        try {
+            console.log('Saving changes for month:', selectedMonth);
+            const docRef = doc(db, selectedMonth, 'weeksData');
+            await updateDoc(docRef, weekData);
             console.log('Week data saved successfully.');
         } catch (error) {
             console.error('Error updating week data:', error);
@@ -151,6 +153,7 @@ const ContentRightJun = ({ selectedMonth }) => {
                             </tbody>
                         </Table>
                     </div>
+                    <Button className='border-0 font2 px-4' style={{ backgroundColor:'#00BDB2' }} onClick={handleSaveChanges}>Save</Button>
                 </div>
             </div>
         </div>
