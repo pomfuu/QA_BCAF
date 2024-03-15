@@ -67,7 +67,7 @@ const ChartsAll = () => {
         <div className="row align-items-center">
                 <div className="col-4 text-center font2 mx-auto">
                     <div className="d-flex align-items-center justify-content-center"> {/* Added justify-content-center */}
-                        <p style={{ fontSize: '3vw', marginBottom: '-0.9vw' }}>QA DASHBOARD</p>
+                        <p style={{ fontSize: '3vw', marginBottom: '-0.9vw' }}>QA SCOREBOARD</p>
                         <Image style={{ height:'2vw' }} className='img-fluid' src={star}></Image>
                     </div>
                     <DropdownButton
