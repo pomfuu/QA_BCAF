@@ -1,8 +1,9 @@
 /* eslint-disable no-unused-vars */
 import React, { useRef, useState, useEffect } from 'react';
-import { Button, Table } from 'react-bootstrap';
+import { Button, Table, Modal } from 'react-bootstrap';
 import PropTypes from 'prop-types';
 import { doc, updateDoc, getDoc, setDoc, collection, addDoc } from 'firebase/firestore';
+import ImageCompressor from 'image-compressor.js';
 import db from '../firebaseconfig.js';
 
 const ContentRightJan = ({ selectedMonth }) => {
@@ -19,6 +20,8 @@ const ContentRightJan = ({ selectedMonth }) => {
         week5: '',
         totalWeek: ''
     });
+
+    const [showModal, setShowModal] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -40,17 +43,36 @@ const ContentRightJan = ({ selectedMonth }) => {
         fetchData();
     }, [selectedMonth]);
 
-    const handleFileUpload = (event) => {
+    const handleFileUpload = async (event) => {
         const file = event.target.files[0];
-        if (file && uploadedImages.length < 5) {
-            const reader = new FileReader();
-            reader.onload = () => {
-                const newImages = [...uploadedImages, reader.result];
-                setUploadedImages(newImages);
-                localStorage.setItem(`uploadedImages_${selectedMonth}`, JSON.stringify(newImages));
-            };
-            reader.readAsDataURL(file);
+        if (file) {
+            try {
+                const compressedFile = await compressImage(file);
+                const reader = new FileReader();
+                reader.onload = () => {
+                    const newImages = [...uploadedImages, reader.result];
+                    setUploadedImages(newImages);
+                    localStorage.setItem(`uploadedImages_${selectedMonth}`, JSON.stringify(newImages));
+                };
+                reader.readAsDataURL(compressedFile);
+            } catch (error) {
+                console.error('Error compressing image:', error);
+            }
         }
+    };
+
+    const compressImage = (file) => {
+        return new Promise((resolve, reject) => {
+            new ImageCompressor(file, {
+                quality: 0.2,
+                success(result) {
+                    resolve(result);
+                },
+                error(error) {
+                    reject(error);
+                },
+            });
+        });
     };
 
     const updateFirestoreImages = async (images) => {
@@ -100,11 +122,20 @@ const ContentRightJan = ({ selectedMonth }) => {
             console.log('Saving changes for month:', selectedMonth);
             const docRef = doc(db, selectedMonth, 'weeksData');
             await updateDoc(docRef, weekData);
-            updateFirestoreImages(uploadedImages); // Update images
+            updateFirestoreImages(uploadedImages);
             console.log('Week data and images saved successfully.');
+            setShowModal(false);
         } catch (error) {
             console.error('Error updating week data:', error);
         }
+    };
+
+    const handleCloseModal = () => {
+        setShowModal(false);
+    };
+
+    const handleShowModal = () => {
+        setShowModal(true);
     };
 
     ContentRightJan.propTypes = {
@@ -133,7 +164,7 @@ const ContentRightJan = ({ selectedMonth }) => {
                     {uploadedImages.length < 5 && (
                         <div className="btn rounded-2 text-white font2 me-1" style={{ backgroundColor: '#F86161' }} onClick={() => fileInputRef.current.click()}>Add Image</div>
                     )}
-                    <Button className='border-0 font2 px-4' style={{ backgroundColor:'#00BDB2' }} onClick={handleSaveChanges}>Save</Button>
+                    <Button className='border-0 font2 px-4' style={{ backgroundColor:'#00BDB2' }} onClick={handleShowModal}>Save</Button>
                     <input type="file" ref={fileInputRef} style={{ display: 'none' }} accept="image/*" onChange={handleFileUpload} />
                 </div>
                 <div className="col-lg-5">
@@ -162,11 +193,27 @@ const ContentRightJan = ({ selectedMonth }) => {
                             </tbody>
                         </Table>
                     </div>
-                    <Button className='border-0 font2 px-4' style={{ backgroundColor:'#00BDB2' }} onClick={handleSaveChanges}>Save</Button>
+                    <Button className='border-0 font2 px-4' style={{ backgroundColor:'#00BDB2' }} onClick={handleShowModal}>Save</Button>
                 </div>
             </div>
+
+            <Modal show={showModal} onHide={handleCloseModal}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Confirm Save Changes</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>Are you sure you want to save the changes?</Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleCloseModal}>
+                        Cancel
+                    </Button>
+                    <Button variant="primary" onClick={handleSaveChanges}>
+                        Save Changes
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </div>
     );
 };
 
 export default ContentRightJan;
+

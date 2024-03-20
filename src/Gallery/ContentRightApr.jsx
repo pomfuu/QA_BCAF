@@ -1,8 +1,9 @@
 /* eslint-disable no-unused-vars */
 import React, { useRef, useState, useEffect } from 'react';
-import { Button, Table } from 'react-bootstrap';
+import { Button, Table, Modal } from 'react-bootstrap';
 import PropTypes from 'prop-types';
 import { doc, updateDoc, getDoc, setDoc, collection, addDoc } from 'firebase/firestore';
+import ImageCompressor from 'image-compressor.js';
 import db from '../firebaseconfig.js';
 
 const ContentRightApr = ({ selectedMonth }) => {
@@ -19,6 +20,8 @@ const ContentRightApr = ({ selectedMonth }) => {
         week5: '',
         totalWeek: ''
     });
+
+    const [showModal, setShowModal] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -40,16 +43,44 @@ const ContentRightApr = ({ selectedMonth }) => {
         fetchData();
     }, [selectedMonth]);
 
-    const handleFileUpload = (event) => {
-        const file = event.target.files[0];
-        if (file && uploadedImages.length < 5) {
-            const reader = new FileReader();
-            reader.onload = () => {
-                const newImages = [...uploadedImages, reader.result];
-                setUploadedImages(newImages);
-                localStorage.setItem(`uploadedImages_${selectedMonth}`, JSON.stringify(newImages));
+    const compressAndConvertToJPG = (file, quality) => {
+        return new Promise((resolve, reject) => {
+            const img = document.createElement('img');
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                ctx.drawImage(img, 0, 0);
+    
+                // Convert the image to JPG format
+                canvas.toBlob((blob) => {
+                    resolve(new File([blob], 'image.jpg', { type: 'image/jpeg' }));
+                }, 'image/jpeg', quality);
             };
-            reader.readAsDataURL(file);
+            img.onerror = (error) => {
+                reject(error);
+            };
+            const URL = window.URL || window.webkitURL;
+            img.src = URL.createObjectURL(file);
+        });
+    };
+    
+    const handleFileUpload = async (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            try {
+                const compressedFile = await compressAndConvertToJPG(file, 0.2);
+                const reader = new FileReader();
+                reader.onload = () => {
+                    const newImages = [...uploadedImages, reader.result];
+                    setUploadedImages(newImages);
+                    localStorage.setItem(`uploadedImages_${selectedMonth}`, JSON.stringify(newImages));
+                };
+                reader.readAsDataURL(compressedFile);
+            } catch (error) {
+                console.error('Error compressing and converting image:', error);
+            }
         }
     };
 
@@ -100,11 +131,20 @@ const ContentRightApr = ({ selectedMonth }) => {
             console.log('Saving changes for month:', selectedMonth);
             const docRef = doc(db, selectedMonth, 'weeksData');
             await updateDoc(docRef, weekData);
-            updateFirestoreImages(uploadedImages); // Update images
+            updateFirestoreImages(uploadedImages);
             console.log('Week data and images saved successfully.');
+            setShowModal(false);
         } catch (error) {
             console.error('Error updating week data:', error);
         }
+    };
+
+    const handleCloseModal = () => {
+        setShowModal(false);
+    };
+
+    const handleShowModal = () => {
+        setShowModal(true);
     };
 
     ContentRightApr.propTypes = {
@@ -133,7 +173,7 @@ const ContentRightApr = ({ selectedMonth }) => {
                     {uploadedImages.length < 5 && (
                         <div className="btn rounded-2 text-white font2 me-1" style={{ backgroundColor: '#F86161' }} onClick={() => fileInputRef.current.click()}>Add Image</div>
                     )}
-                    <Button className='border-0 font2 px-4' style={{ backgroundColor:'#00BDB2' }} onClick={handleSaveChanges}>Save</Button>
+                    <Button className='border-0 font2 px-4' style={{ backgroundColor:'#00BDB2' }} onClick={handleShowModal}>Save</Button>
                     <input type="file" ref={fileInputRef} style={{ display: 'none' }} accept="image/*" onChange={handleFileUpload} />
                 </div>
                 <div className="col-lg-5">
@@ -162,11 +202,27 @@ const ContentRightApr = ({ selectedMonth }) => {
                             </tbody>
                         </Table>
                     </div>
-                    <Button className='border-0 font2 px-4' style={{ backgroundColor:'#00BDB2' }} onClick={handleSaveChanges}>Save</Button>
+                    <Button className='border-0 font2 px-4' style={{ backgroundColor:'#00BDB2' }} onClick={handleShowModal}>Save</Button>
                 </div>
             </div>
+
+            <Modal show={showModal} onHide={handleCloseModal}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Confirm Save Changes</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>Are you sure you want to save the changes?</Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleCloseModal}>
+                        Cancel
+                    </Button>
+                    <Button variant="primary" onClick={handleSaveChanges}>
+                        Save Changes
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </div>
     );
 };
 
 export default ContentRightApr;
+
