@@ -140,6 +140,9 @@ const SummaryPage = () => {
       case 'Yuda':
       case 'Aldo':
       case 'Alya':
+      case 'Zelin':
+      case 'Cindy (MF)':
+      case 'Ave':
         return 'manual';
       case 'Gita':
         return 'spv';
