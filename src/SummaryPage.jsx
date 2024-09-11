@@ -131,21 +131,21 @@ const SummaryPage = () => {
       case 'Dimas':
       case 'Fajar':
       case 'Khusnul':
-      case 'Jerry':
+      case 'Jason':
         return 'auto';
       case 'Alzre':
-      // case 'Gita':
+      case 'Gita':
       case 'Izza':
       case 'Rania':
       case 'Yuda':
-      case 'Aldo':
       case 'Alya':
-      case 'Zelin':
-      case 'Cindy U':
-      case 'Ave':
+      case 'Thendri':
+      case 'Novensius':
+      case 'Andilians':
+        case 'Zelin':
+          case 'Cindy U':
+          case 'Ave':
         return 'manual';
-      case 'Gita':
-        return 'spv';
       default:
         return '';
     }
