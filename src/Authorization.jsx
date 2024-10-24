@@ -17,7 +17,7 @@ const Authorization = () => {
         if (form.checkValidity() === false) {
             event.stopPropagation();
         } else {
-            if (password === "daniel") {
+            if (password === "nasigoreng") {
                 setValidated(true);
                 localStorage.setItem('isLoggedIn', true); 
                 navigate("/input_data"); 
