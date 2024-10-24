@@ -132,6 +132,8 @@ const SummaryPage = () => {
       case 'Fajar':
       case 'Khusnul':
       case 'Jason':
+      case 'Novensius':
+      case 'Andilians':
         return 'auto';
       case 'Alzre':
       case 'Gita':
@@ -140,11 +142,9 @@ const SummaryPage = () => {
       case 'Yuda':
       case 'Alya':
       case 'Thendri':
-      case 'Novensius':
-      case 'Andilians':
-        case 'Zelin':
-          case 'Cindy U':
-          case 'Ave':
+      case 'Zelin':
+      case 'Cindy U':
+      case 'Ave':
         return 'manual';
       default:
         return '';
