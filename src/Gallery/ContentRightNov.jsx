@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import { doc, updateDoc, getDoc, setDoc, collection, addDoc } from 'firebase/firestore';
 import ImageCompressor from 'image-compressor.js';
 import db from '../firebaseconfig.js';
+import imageCompression from 'browser-image-compression';
 
 const ContentRightNov = ({ selectedMonth }) => {
     const fileInputRef = useRef(null);
@@ -43,6 +44,21 @@ const ContentRightNov = ({ selectedMonth }) => {
         fetchData();
     }, [selectedMonth]);
 
+    const compressImage = async (file) => {
+        try {
+            const options = {
+                maxSizeMB: 0.2, 
+                maxWidthOrHeight: 800,
+                useWebWorker: true,
+            };
+            const compressedFile = await imageCompression(file, options);
+            return compressedFile;
+        } catch (error) {
+            console.error('Error compressing image:', error);
+            throw error;
+        }
+    };
+
     const compressAndConvertToJPG = (file, quality) => {
         return new Promise((resolve, reject) => {
             const img = document.createElement('img');
@@ -53,7 +69,6 @@ const ContentRightNov = ({ selectedMonth }) => {
                 canvas.height = img.height;
                 ctx.drawImage(img, 0, 0);
     
-                // Convert the image to JPG format
                 canvas.toBlob((blob) => {
                     resolve(new File([blob], 'image.jpg', { type: 'image/jpeg' }));
                 }, 'image/jpeg', quality);
@@ -65,12 +80,11 @@ const ContentRightNov = ({ selectedMonth }) => {
             img.src = URL.createObjectURL(file);
         });
     };
-    
     const handleFileUpload = async (event) => {
         const file = event.target.files[0];
         if (file) {
             try {
-                const compressedFile = await compressAndConvertToJPG(file, 0.2);
+                const compressedFile = await compressImage(file);
                 const reader = new FileReader();
                 reader.onload = () => {
                     const newImages = [...uploadedImages, reader.result];
@@ -79,7 +93,7 @@ const ContentRightNov = ({ selectedMonth }) => {
                 };
                 reader.readAsDataURL(compressedFile);
             } catch (error) {
-                console.error('Error compressing and converting image:', error);
+                console.error('Error compressing and uploading image:', error);
             }
         }
     };
@@ -150,6 +164,8 @@ const ContentRightNov = ({ selectedMonth }) => {
     ContentRightNov.propTypes = {
         selectedMonth: PropTypes.string.isRequired,
     };
+
+    
 
     return (
         <div className='container-fluid'>
