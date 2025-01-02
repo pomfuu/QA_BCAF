@@ -136,13 +136,13 @@ const SummaryPage = () => {
       case 'Andilians':
         return 'auto';
       case 'Alzre':
-      case 'Gita':
+      case 'Indri':
       case 'Izza':
       case 'Rania':
       case 'Yuda':
       case 'Alya':
       case 'Thendri':
-      case 'Zelin':
+      case 'Adel':
       case 'Cindy U':
       case 'Ave':
         return 'manual';
