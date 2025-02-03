@@ -134,6 +134,7 @@ const SummaryPage = () => {
       case 'Jason':
       case 'Novensius':
       case 'Andilians':
+      case 'Zefanya':
         return 'auto';
       case 'Alzre':
       case 'Indri':

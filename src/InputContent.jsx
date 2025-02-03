@@ -16,7 +16,7 @@ import { Link } from 'react-router-dom';
 
 const InputContent = () => {
   const weeks = ["Week 1", "Week 2", "Week 3", "Week 4", "Week 5"];
-  const names = ["Alin", "Alzre", "Cindy", "Daniel", "Dimas", "Fajar", "indri", "Izza", "Khusnul", "Rania", "Yuda", "Alya", "Cindy U", "Adel", "Ave", "Jason", "Thendri", "Novensius", "Andilians"];
+  const names = ["Alin", "Alzre", "Cindy", "Daniel", "Dimas", "Fajar", "indri", "Izza", "Zefanya" , "Khusnul", "Rania", "Yuda", "Alya", "Cindy U", "Adel", "Ave", "Jason", "Thendri", "Novensius", "Andilians"];
   const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
   // State for managing table data
@@ -87,6 +87,7 @@ const InputContent = () => {
         case 'Fajar':
         case 'Khusnul':
         case 'Jason':
+        case 'Zefanya':
           case 'Novensius':
             case 'Andilians':
           return 'auto';
