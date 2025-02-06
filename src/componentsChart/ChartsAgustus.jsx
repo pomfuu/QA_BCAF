@@ -25,7 +25,7 @@ const ChartsAgustus = () => {
                     const autoData = [];
                     const manualData = [];
                     Object.keys(februarySummaryData.data).forEach(name => {
-                        const role = ['Alin', 'Cindy', 'Daniel', 'Dimas', 'Khusnul', 'Fajar', 'Jerry', 'Jason', 'Novensius', 'Andilians'].includes(name) ? 'auto' : 'manual';
+                        const role = ['Alin', 'Cindy', 'Daniel', 'Dimas', 'Khusnul', 'Fajar', 'Jerry', 'Jason', 'Novensius', 'Andilians', 'Zefanya', 'Jason'].includes(name) ? 'auto' : 'manual';
                         const weeks = februarySummaryData.data[name].weeks;
                         const weekSteps = {
                             'Week 1': weeks['Week 1'] ? weeks['Week 1'].steps : 0,
@@ -63,11 +63,11 @@ const ChartsAgustus = () => {
     }, []);
     
     const getRobotImage = (total, role) => {
-        let target = 6600;
+        let target = 7800;
         let robotImg = robot1;
 
         if (role === 'auto') {
-            target = 7920;
+            target = 9000;
         }
 
         const percentage = (total / target) * 100;
@@ -88,9 +88,9 @@ const ChartsAgustus = () => {
     };
 
     const goal = (role) => {
-        let goalVal = 6600;
+        let goalVal = 7800;
         if (role === 'auto') {
-            goalVal = 7920;
+            goalVal = 9000;
         }
         return goalVal;
     }

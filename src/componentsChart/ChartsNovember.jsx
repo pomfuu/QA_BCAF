@@ -25,7 +25,7 @@ const ChartsNovember = () => {
                     const autoData = [];
                     const manualData = [];
                     Object.keys(februarySummaryData.data).forEach(name => {
-                        const role = ['Alin', 'Cindy', 'Daniel', 'Dimas', 'Khusnul', 'Fajar', 'Jerry', 'Jason', 'Novensius', 'Andilians'].includes(name) ? 'auto' : 'manual';
+                        const role = ['Alin', 'Cindy', 'Daniel', 'Dimas', 'Khusnul', 'Fajar', 'Jerry', 'Jason', 'Novensius', 'Andilians', 'Novensius', 'Andilians', 'Zefanya', 'Jason'].includes(name) ? 'auto' : 'manual';
                         const weeks = februarySummaryData.data[name].weeks;
                         const weekSteps = {
                             'Week 1': weeks['Week 1'] ? weeks['Week 1'].steps : 0,
@@ -63,11 +63,11 @@ const ChartsNovember = () => {
     }, []);
     
     const getRobotImage = (total, role) => {
-        let target = 6000;
+        let target = 7800;
         let robotImg = robot1;
 
         if (role === 'auto') {
-            target = 7200;
+            target = 9000;
         }
 
         const percentage = (total / target) * 100;
@@ -88,9 +88,9 @@ const ChartsNovember = () => {
     };
 
     const goal = (role) => {
-        let goalVal = 6000;
+        let goalVal = 7800;
         if (role === 'auto') {
-            goalVal = 7200;
+            goalVal = 9000;
         }
         return goalVal;
     }
@@ -206,9 +206,9 @@ const ChartsNovember = () => {
 };
 
 function renderBars(total, weekValue, color, role) {
-    let goal = 6000;
+    let goal = 7800;
     if (role === 'auto') {
-      goal = 7200;
+      goal = 9000;
     }
     
     const parsedWeekValue = parseInt(weekValue, 10);

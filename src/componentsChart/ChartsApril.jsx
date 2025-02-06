@@ -25,7 +25,7 @@ const ChartsApril = () => {
                     const autoData = [];
                     const manualData = [];
                     Object.keys(februarySummaryData.data).forEach(name => {
-                        const role = ['Alin', 'Cindy', 'Daniel', 'Dimas', 'Khusnul', 'Fajar', 'Jerry'].includes(name) ? 'auto' : 'manual';
+                        const role = ['Alin', 'Cindy', 'Daniel', 'Dimas', 'Khusnul', 'Fajar', 'Jerry','Zefanya', 'Jason'].includes(name) ? 'auto' : 'manual';
                         const weeks = februarySummaryData.data[name].weeks;
                         const weekSteps = {
                             'Week 1': weeks['Week 1'] ? weeks['Week 1'].steps : 0,
@@ -63,11 +63,11 @@ const ChartsApril = () => {
     }, []);
     
     const getRobotImage = (total, role) => {
-        let target = 4800;
+        let target = 5850;
         let robotImg = robot1;
 
         if (role === 'auto') {
-            target = 5760;
+            target = 6750;
         }
 
         const percentage = (total / target) * 100;
@@ -88,9 +88,9 @@ const ChartsApril = () => {
     };
 
     const goal = (role) => {
-        let goalVal = 4800;
+        let goalVal = 5850;
         if (role === 'auto') {
-            goalVal = 5760;
+            goalVal = 6750;
         }
         return goalVal;
     }
@@ -206,9 +206,9 @@ const ChartsApril = () => {
 };
 
 function renderBars(total, weekValue, color, role) {
-    let goal = 4800;
+    let goal = 5850;
     if (role === 'auto') {
-      goal = 5760;
+      goal = 6750;
     }
     
     const parsedWeekValue = parseInt(weekValue, 10);
