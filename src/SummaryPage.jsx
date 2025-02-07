@@ -135,6 +135,7 @@ const SummaryPage = () => {
       case 'Novensius':
       case 'Andilians':
       case 'Zefanya':
+        case 'tes':
         return 'auto';
       case 'Alzre':
       case 'Indri':
