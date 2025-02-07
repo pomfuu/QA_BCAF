@@ -59,11 +59,11 @@ const SummaryPage = () => {
           const role = getRole(name);
           let target;
           if (role === 'auto') {
-            target = 1800 * totalWeeks[month];
+            target = 2250 * totalWeeks[month];
           } else if (role === 'spv') {
             target = 250;
           } else {
-            target = 1500 * totalWeeks[month];
+            target = 1950 * totalWeeks[month];
           }
           newMonthlyTarget[`${month}-${name}`] = target;
           newAveragePercent[`${month}-${name}`] = calculateAveragePercent(newSummaryData[month][name].totalSteps, target);
